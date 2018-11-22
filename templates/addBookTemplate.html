@@ -1,0 +1,31 @@
+{% import 'macros.html' as macros %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Book</title>
+</head>
+<body>
+{{ macros.logo() }}
+
+<h1> Using Post</h1>
+<form action="/addBook" method="post">
+
+    Author:    <input type="text" name="Author"><br>
+    Title:     <input type="text" name="Title"><br>
+    Year:    <input type="number" name="Year"><br>
+    <input type="submit">
+</form>
+
+<h1> Using Get</h1>
+<form action="/addBook" method="get">
+    Author:    <input type="text" name="Author"><br>
+    Title:     <input type="text" name="Title"><br>
+    Year:    <input type="number" name="Year"><br>
+    <input type="submit">
+</form>
+
+{{ macros.links() }}
+</body>
+</html>

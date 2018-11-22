@@ -1,0 +1,24 @@
+{% import 'macros.html' as macros %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book DB</title>
+</head>
+<body>
+{{ macros.logo() }}
+
+<h1>Book DB</h1>
+The book Database has now {{ count_books}} books.
+
+{% if op_result == "book_added" %}
+<h1>Operation Result</h1>
+The operation was successful, book added.
+{% endif %}
+
+
+{{ macros.links() }}
+
+</body>
+</html>

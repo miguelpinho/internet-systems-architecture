@@ -1,0 +1,70 @@
+{% import 'macros.html' as macros %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Operation Result</title>
+    <style>
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-template-rows: auto auto;
+  grid-gap: 5px;
+  background-color: #b4b2b5;
+  padding: 5px;
+}
+.grid-container>div {
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  padding:5px 0;
+  font-size: 20px;
+}
+</style>
+<link rel="stylesheet" href="/static/jquery-ui.css"> </link>
+<script src="/static/jquery.js"></script>
+<script src="/static/jquery-ui.js"></script>
+</head>
+<body>
+
+{{ macros.logo() }}
+
+<h1>{{ title }}</h1>
+<hr>
+<div class="grid-container" style="grid-auto-flow: row;">
+{% for book in content %}
+    <div class="item{{ book.id }}">
+        <h4>{{ book.title }}</h4>
+        <p>Author:{{ book.author }}  Year:{{ book.year }}</p>
+        <p id="id_likes_p">ID:{{ book.id }}  Likes:{{ book.likes }}</p>
+        <button class="button" onclick="put_like({{ book.id }}, this)">Like</button>
+        <a href="/search?query=ById&Author=&BookId={{ book.id }}&Year=" class="button">Book Page</a>
+    </div>
+{% endfor %}
+</div>
+<hr>
+
+{{ macros.links() }}
+
+<script type="text/javascript">
+
+    function req_response(event) {
+        let o = JSON.parse(this.responseText);
+        let book = o["Book"];
+        let book_id = event.target.arg_book_id;
+        let div = $(".item"+book_id);
+        $("#id_likes_p", div).html("Id:"+book["Id"] + " Likes:"+ book["Likes"])
+    }
+
+    function put_like(book_id) {
+
+        let oReq = new XMLHttpRequest();
+        oReq.addEventListener("load", req_response);
+        oReq.arg_book_id = book_id;
+        oReq.open("POST", "/api/books/"+ book_id +"/like");
+        oReq.setRequestHeader("Content-type", "application/json");
+        oReq.send();
+    }
+</script>
+
+</body>
+</html>

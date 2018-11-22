@@ -1,0 +1,54 @@
+{% import 'macros.html' as macros %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+{{ macros.logo() }}
+
+<h1>Books Search</h1>
+<form action="/search" method="get">
+    <select name="query" id="querySelector">
+      <option value="ById">By Book Id</option>
+      <option value="ByAuthor">By Author</option>
+      <option value="ByYear">By Year</option>
+    </select>
+    <br>
+    <em class="type_placeholder"></em>
+    <input class="hide_input_class" type="text" name="Author" title="Author">
+    <input class="hide_input_class" type="text" name="BookId" title="Book Id">
+    <input class="hide_input_class" type="number" name="Year" title="Year">
+    <br><br>
+    <input type="submit">
+</form>
+
+{{ macros.links() }}
+
+</body>
+<script type="text/javascript">
+    const queryConst = "{{query|safe}}";
+    let selector = $("#querySelector");
+    selector.val(queryConst);
+    updateView();
+    selector.on("change", updateView);
+
+
+    function updateView() {
+        console.log("UpdateView");
+        $("input.hide_input_class").hide();
+        if (selector.val() === "ById"){
+            $("[name='BookId']").show();
+            $("em.type_placeholder").html("Book Id:")
+        } else if (selector.val() === "ByAuthor"){
+            $("[name='Author']").show();
+            $("em.type_placeholder").html("Author:")
+        } else {
+            $("[name='Year']").show();
+            $("em.type_placeholder").html("Year:")
+        }
+    }
+</script>
+</html>

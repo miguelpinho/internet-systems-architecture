@@ -1,0 +1,125 @@
+{% import 'macros.html' as macros %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Detail</title>
+
+    <style>
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  grid-gap: 10px;
+  padding: 5px;
+    background-color: lightsteelblue;
+    width: fit-content;
+}
+.grid-container>div {
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: left;
+  padding:5px 5px;
+  font-size: 20px;
+}
+</style>
+<link rel="stylesheet" href="/static/jquery-ui.css"> </link>
+<script src="/static/jquery.js"></script>
+<script src="/static/jquery-ui.js"></script>
+</head>
+<body>
+
+{{ macros.logo() }}
+
+<h1>Book Detail</h1>
+
+<div class="grid-container" style="grid-auto-flow: row;">
+    <div class="item0">
+        <h4>Title: {{ book.title }}</h4>
+        <p>Author: {{ book.author }}</p>
+        <p>Year: {{ book.year }}</p>
+        <p>ID: {{ book.id }}</p>
+        <p id="likes_p"> Likes: {{ book.likes }}</p>
+        <button class="button" onclick="put_like({{ book.id }}, this)">Like</button>
+        <button class="button" onclick="display_editor()">Change info</button>
+    </div>
+
+    <div class="item1" >
+        <br>
+        Title:
+        <br>
+        <input class="edit_input" type="text" title="Title"/>
+        <br/>
+        <br>
+        Author:
+        <br>
+        <input class="edit_input" type="text" title="Author"/>
+        <br/>
+        <br>
+        Year:
+        <br>
+        <input class="edit_input" type="number" title="Year"/>
+        <br/>
+        <br/>
+        <button class="button" onclick="submit_edit()">Submit</button>
+    </div>
+</div>
+
+
+{{ macros.links() }}
+
+<script type="text/javascript">
+    let ct_book_id = {{ book.id }};
+    $(".item1").hide();
+
+    function display_editor(){
+        $(".item1").show();
+    }
+
+    function submit_response() {
+        let o = this.responseText;
+        if (o === "OK"){
+            location.reload()
+        }
+        else alert("Something went wrong")
+    }
+
+    function submit_edit() {
+        let args = {};
+        let all_inputs = $(".edit_input");
+        all_inputs.each(function (index) {
+            let this_input = all_inputs[index];
+            args[this_input.title] = this_input.value
+        });
+
+        let oReq = new XMLHttpRequest();
+        oReq.addEventListener("load", submit_response);
+        oReq.arg_book_id = ct_book_id ;
+        oReq.open("PUT", "/api/books/"+ ct_book_id +"/edit");
+        oReq.setRequestHeader("Content-type", "application/json");
+        oReq.send(JSON.stringify(args));
+    }
+</script>
+
+<script type="text/javascript">
+
+    function req_response(event) {
+        let o = JSON.parse(this.responseText);
+        let book = o["Book"];
+        let book_id = event.target.arg_book_id;
+        let div = $(".item"+book_id);
+        $("#likes_p", div).html("Likes: "+ book["Likes"])
+    }
+
+    function put_like(book_id) {
+
+        let oReq = new XMLHttpRequest();
+        oReq.addEventListener("load", req_response);
+        oReq.arg_book_id = book_id;
+        oReq.open("POST", "/api/books/"+ book_id +"/like");
+        oReq.setRequestHeader("Content-type", "application/json");
+        oReq.send();
+    }
+</script>
+
+</body>
+</html>
