@@ -22,7 +22,7 @@ class users:
         # return (latitude, longitude) if checked in, null otherwise
         pass
 
-    def find_close_users(self, ist_id):
+    def get_close_users(self, ist_id):
         # return [users] list if checked in, null otherwise
         pass
 
