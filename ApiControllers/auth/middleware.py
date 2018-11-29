@@ -12,7 +12,7 @@ def auth_verification(auth_type=AuthType.AUTH_TYPE_USER):
             # Fetch db from g object
 
             if auth_type == AuthType.AUTH_TYPE_USER:
-                # Verify user based on token (may be in the header or somewhere), check it in database
+                # Verify user based on token (may be in the header or somewhere), check it in database (get_db())
 
                 # If not in db:
                 #    raise unauthorized error:  raise NotAuthenticated

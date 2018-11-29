@@ -1,4 +1,5 @@
 def add_bot(db, bid):
+    # adds bot (creates bot token and puts time of creation in the record and return the token in the end
     pass
 
 
@@ -11,7 +12,7 @@ def list_bots_by_building(db, bid):
     pass
 
 
-def list_bots(db, list_bots):
+def list_bots(db):
     # return list of existing bots
     pass
 

@@ -1,4 +1,8 @@
-from flask import Flask, request
+from flask import Flask, request, g
+
+from Db.db import get_db
+from DbInterface import bots
+from exceptions import InvalidRequest
 
 
 def decorate_admin_routes(flask_app: Flask):
@@ -10,15 +14,23 @@ def decorate_admin_routes(flask_app: Flask):
 def decorate_admin_bots(flask_app: Flask):
     @flask_app.route("/api/admin/bots", methods=["POST", "GET"])
     def admin_bots():
-        if request.method == "GET":
-            pass
-            # List of all the bots
+        try:
+            response = {}
+            if request.method == "GET":
+                # List of all the bots
+                bots_list = bots.list_bots(get_db())
+                response.status = 200
+                response.bots = bots_list
+            else:
+                # Creates new bot, building is passed in the body
+                bot_token = bots.add_bot(get_db(), request.json["building"])
+                response.status = 200
+                response.bot_token = bot_token
 
-        else:
-            pass
-            # Creates new bot, building is passed in the body
+            return response
 
-        return "/api/admin/bots"
+        except IndexError:
+            return InvalidRequest("Could not fulfill the request")
 
     @flask_app.route("/api/admin/bots/<token>", methods=["GET", "DELETE"])
     def admin_bots_id(token=None):
