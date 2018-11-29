@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, g
 
-from ApiControllers.auth import auth_verification
+from ApiControllers.Auth import auth_verification
 from ApiControllers.exceptions import InvalidRequest
 
 
@@ -8,7 +8,7 @@ def decorate_user_routes(flask_app: Flask):
     """ Decorates The Routes related with the user api (/api/user/)"""
 
     @flask_app.route("/api/user/messages", methods=["GET", "POST"])
-    @auth_verification() # This is the middleware for authentication
+    @auth_verification()  # This is the middleware for authentication
     def user_messages():
         """ Handles User Messages - Inserts messages or gets them, based on the http method (POST, GET) """
         # Receives uuid on the user from the middleware (not yet implemented, currently receives a "Fake UUID")

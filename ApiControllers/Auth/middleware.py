@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import g, redirect, request, url_for
 
-from ApiControllers.auth.exceptions import NotAuthenticated
+from ApiControllers.Auth.exceptions import NotAuthenticated
 from Utils.consts import AuthType
 
 

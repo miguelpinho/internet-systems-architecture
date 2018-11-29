@@ -4,11 +4,12 @@ def add_bot(db, bid):
 
 
 def delete_bot(db, bot_token):
+    # returns deleted bot info (got from database pop)
     pass
 
 
 def list_bots_by_building(db, bid):
-    # return list of bots in a building or null ?!?!?!?
+    # return list of bots in a building (if there are no bots a empty list is returned)
     pass
 
 

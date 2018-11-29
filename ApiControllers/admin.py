@@ -1,7 +1,7 @@
-from flask import Flask, request, g
+from flask import Flask, request
 
-from Db.db import get_db
-from DbInterface import bots
+from ApiUtils.db import get_db
+from DbInterface import bots, buildings
 from exceptions import InvalidRequest
 
 
@@ -25,50 +25,79 @@ def decorate_admin_bots(flask_app: Flask):
                 # Creates new bot, building is passed in the body
                 bot_token = bots.add_bot(get_db(), request.json["building"])
                 response.status = 200
-                response.bot_token = bot_token
+                response.token = bot_token
 
             return response
 
-        except IndexError:
-            return InvalidRequest("Could not fulfill the request")
+        except IndexError as e:
+            return InvalidRequest("Could not fulfill the request " + str(e))
 
     @flask_app.route("/api/admin/bots/<token>", methods=["GET", "DELETE"])
     def admin_bots_id(token=None):
-        if request.method == "GET":
-            pass
-            # Return the bot building, and maybe other info
+        try:
+            response = {}
+            if request.method == "GET":
+                # Return the bot building, and maybe other info
+                building = bots.where_is_bot(get_db(), token)
+                response.status = 200
+                response.building = building
+            else:
+                # Deletes a bot, bot id (token) is passed in query
+                deleted_bot = bots.delete_bot(get_db(), token)
+                response.status = 200
+                response.bot_info = deleted_bot
+            return response
 
-        else:
-            pass
-            # Deletes a bot, bot id (token) is passed in query
-
-        return f"/api/admin/bots/${token}"
+        except IndexError as e:
+            return InvalidRequest("Could not fulfill the request " + str(e))
 
 
 def decorate_admin_buildings(flask_app: Flask):
     @flask_app.route("/api/admin/buildings", methods=["POST", "GET"])
     def admin_buildings():
-        if request.method == "GET":
-            pass
-            # List of all the buildings (name and id)
+        try:
+            response = {}
+            if request.method == "GET":
+                # List of all the buildings (name and id)
+                buildings_list = buildings.show_all_buildings(get_db())
+                response.status = 200
+                response.buildings = buildings_list
+            else:
+                # Creates new building, info is passed on the body
+                body = request.json
+                bid = body["id"]
+                bname = body["name"]
+                lat = body["latitude"]
+                lon = body["longitude"]
+                rad = body["radius"]
+                new_building = buildings.add_building(get_db(), bid, bname, lat, lon, rad)
+                response.status = 200
+                response.building = new_building
+            return response
 
-        else:
-            pass
-            # Creates new building, info is passed on the body
-
-        return "/api/admin/buildings"
+        except IndexError as e:
+            return InvalidRequest("Could not fulfill the request " + str(e))
 
     @flask_app.route("/api/admin/bots/<bid>", methods=["GET", "DELETE"])
     def admin_buildings_id(bid=None):
-        if request.method == "GET":
-            pass
-            # Return the building info, users list and bots list
+        try:
+            response = {}
+            if request.method == "GET":
+                # Return the building info, users list and bots list
+                building = buildings.show_info(get_db(), bid)
+                response.status = 200
+                response.building = building
+            else:
+                # Deletes a building, building id (bid) is passed in query
+                body = request.json
+                bid = body["id"]
+                deleted_bot = bots.delete_bot(get_db(), bid)
+                response.status = 200
+                response.bot_info = deleted_bot
+            return response
 
-        else:
-            pass
-            # Deletes a bot, building id (bid) is passed in query
-
-        return f"/api/admin/buildings/${bid}"
+        except IndexError as e:
+            return InvalidRequest("Could not fulfill the request " + str(e))
 
 
 def decorate_admin_logs(flask_app: Flask):
@@ -86,4 +115,3 @@ def decorate_admin_logs(flask_app: Flask):
     def admin_logs_building(bid=None):
         # Returns messages in that building
         return f"/api/admin/logs/buildings/{bid}"
-
