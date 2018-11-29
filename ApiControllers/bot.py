@@ -14,9 +14,10 @@ def decorate_bot_routes(flask_app: Flask):
         try:
             content = request.json
             message = content["message"]
-            # g.pop("db") gets the session db object
+            # get_db() gets the request db object
             # g.pop("uuid") gets the bot_token
-            # If there is some problem with the request in the bot.send_msg() throw an exception
+            # If there is some problem with the request in the bot.send_msg(), throw an exception from inside
+            # Any new exceptions should be handled by Flask, so use exceptions.py to insert the exception
             bots.send_msg(get_db(), g.uuid, message)
         except (IndexError, TypeError):
             raise InvalidRequest("token and/or message not valid")
