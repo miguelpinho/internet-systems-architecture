@@ -20,7 +20,6 @@ Although you can use them, for a more unique website, replace these images with 
 
     <!-- Custom Fonts from Google -->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
-
 </head>
 
 <body>
@@ -45,7 +44,10 @@ Although you can use them, for a more unique website, replace these images with 
             <div class="collapse navbar-collapse" id="navbar">
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="#api_docs">Api docs</a>
+                        <a class="btn btn-primary" style="padding-top: 10px;padding-bottom: 10px;margin: 5px;" href="#api_docs">Api docs</a>
+                    </li>
+                    <li>
+                        <button id="fenix_login_btn_nav" class="btn btn-primary-fenix" style="padding-top: 10px;padding-bottom: 10px;margin: 5px;">Login with Fenix</button>
                     </li>
                 </ul>
 
@@ -60,6 +62,7 @@ Although you can use them, for a more unique website, replace these images with 
                 <h1>Técnico Message Board</h1>
                 <p>Developed for ASINT course at IST, Portugal</p>
                 <a href="#api_docs" class="btn btn-primary btn-lg">See Docs</a>
+                <button id="fenix_login_btn_header" class="btn btn-primary-fenix btn-lg">Login with Fenix</button>
             </div>
         </div>
     </header>
@@ -98,6 +101,7 @@ Although you can use them, for a more unique website, replace these images with 
         <div class="container">
             <h1 class="section-header">Api Docs</h1>
             <p> Put here the docs in html</p>
+            {{ markdown_docs }}
         </div>
     </section>
 
@@ -132,6 +136,9 @@ Although you can use them, for a more unique website, replace these images with 
 
     <!-- Custom Javascript -->
     <script src="/static/js/custom.js"></script>
+
+    <!-- Fenix Api Login JavaScript -->
+    <script src="/static/js/fenix_api_login.js"></script>
 
     <!-- Postman Button for collection-->
     <script type="text/javascript">
