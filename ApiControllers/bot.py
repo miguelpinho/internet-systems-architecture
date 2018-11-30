@@ -1,7 +1,7 @@
 from flask import request, g
 from ApiUtils.db import get_db
 from DbInterface import bots
-from ApiControllers.Auth import auth_verification
+from ApiControllers.auth import auth_verification
 from ApiControllers.exceptions import *
 from Utils.consts import AuthType
 
