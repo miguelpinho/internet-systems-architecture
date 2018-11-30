@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Chat | Chat App</title>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="/static/css/styles.css" />
+  </head>
+  <body class="chat">
+
+    <div class="chat__sidebar">
+      <h3>Building: </h3>
+      <ul>
+        <li id="people_room"></li>
+      </ul>
+      <h3>Nearby:</h3>
+      <div id="users">
+
+      </div>
+    </div>
+
+    <div class="chat__main">
+      <ol id="messages" class="chat__messages"></ol>
+
+      <div class="chat__footer">
+          <input id="send_message_input" name="message" type="text" placeholder="Message"
+            autofocus autocomplete="off" />
+          <button id="send_message_button">Send</button>
+      </div>
+    </div>
+
+    <script id="message-template" type="text/template">
+      <li class="message">
+        <div class="message__title">
+          <h4>{{from}}</h4>
+          <span>{{createdAt}}</span>
+        </div>
+        <div class="message__body">
+          <p>{{text}}</p>
+        </div>
+      </li>
+    </script>
+
+    <script id="location-message-template" type="text/template">
+      <li class="message">
+        <div class="message__title">
+          <h4>{{from}}</h4>
+          <span>{{createdAt}}</span>
+        </div>
+        <div class="message__body">
+          <p>
+            <a href="{{url}}" target="_blank">My current location</a>
+          </p>
+        </div>
+      </li>
+    </script>
+
+    <script src="static/js/jquery.js"></script>
+    <script src="static/js/dashboard.js"></script>
+    <script src="static/js/dashboard/auth.js"></script>
+    <script src="static/js/dashboard/consts.js"></script>
+    <script src="static/js/dashboard/location.js"></script>
+    <script src="static/js/dashboard/nearby.js"></script>
+    <script src="static/js/dashboard/receive_message.js"></script>
+    <script src="static/js/dashboard/send_message.js"></script>
+    <script src="static/js/libs/moment.js"></script>
+    <script src="static/js/libs/mustache.js"></script>
+  </body>
+</html>

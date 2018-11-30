@@ -150,17 +150,6 @@ header .header-content .header-content-inner p {
     vertical-align: middle;
 }
 
-.item-1 {
-	background: url('../images/writing.jpg');
-	}
-
-.item-2 {
-	background: url('../images/concert.jpg');
-	}
-
-.item-3 {
-	background: url('../images/pencil_sharpener.jpg');
-	}
 
 .item-1,
 .item-2,
@@ -396,6 +385,58 @@ fieldset[disabled] .btn-primary.active {
     background-color: #fff;
 }
 
+.btn-primary-fenix {
+    border-color: dodgerblue;
+    color: #fff;
+    background-color: dodgerblue;
+    -webkit-transition: all .35s;
+    -moz-transition: all .35s;
+    transition: all .35s;
+}
+
+.btn-primary-fenix:hover,
+.btn-primary-fenix:focus,
+.btn-primary-fenix.focus,
+.btn-primary-fenix:active,
+.btn-primary-fenix.active,
+.open > .dropdown-toggle.btn-primary-fenix {
+    border-color: darkslateblue;
+    color: #fff;
+    background-color: darkslateblue;
+}
+
+.btn-primary-fenix:active,
+.btn-primary-fenix.active,
+.open > .dropdown-toggle.btn-primary {
+    background-image: none;
+}
+
+.btn-primary-fenix.disabled,
+.btn-primary-fenix[disabled],
+fieldset[disabled] .btn-primary-fenix,
+.btn-primary-fenix.disabled:hover,
+.btn-primary-fenix[disabled]:hover,
+fieldset[disabled] .btn-primary-fenix:hover,
+.btn-primary-fenix.disabled:focus,
+.btn-primary-fenix[disabled]:focus,
+fieldset[disabled] .btn-primary-fenix:focus,
+.btn-primary-fenix.disabled.focus,
+.btn-primary-fenix[disabled].focus,
+fieldset[disabled] .btn-primary-fenix.focus,
+.btn-primary-fenix.disabled:active,
+.btn-primary-fenix[disabled]:active,
+fieldset[disabled] .btn-primary-fenix:active,
+.btn-primary-fenix.disabled.active,
+.btn-primary-fenix[disabled].active,
+fieldset[disabled] .btn-primary-fenix.active {
+    border-color: dodgerblue;
+    background-color: dodgerblue;
+}
+
+.btn-primary-fenix .badge {
+    color: dodgerblue;
+    background-color: #fff;
+}
 
 .btn {
     border-radius: 300px;
@@ -434,4 +475,8 @@ img::-moz-selection {
 
 .bg-primary {
     background-color: yellowgreen;
+}
+
+.nav > li > a {
+    display: inline-block;
 }
