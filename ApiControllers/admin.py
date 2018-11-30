@@ -1,7 +1,7 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 
 from ApiUtils.db import get_db
-from DbInterface import bots, buildings
+from DbInterface import bots, buildings, logs
 from exceptions import InvalidRequest
 
 
@@ -19,15 +19,15 @@ def decorate_admin_bots(flask_app: Flask):
             if request.method == "GET":
                 # List of all the bots
                 bots_list = bots.list_bots(get_db())
-                response.status = 200
+                status = 200
                 response.bots = bots_list
             else:
                 # Creates new bot, building is passed in the body
                 bot_token = bots.add_bot(get_db(), request.json["building"])
-                response.status = 200
+                status = 200
                 response.token = bot_token
 
-            return response
+            return jsonify(response), status
 
         except IndexError as e:
             return InvalidRequest("Could not fulfill the request " + str(e))
@@ -60,7 +60,7 @@ def decorate_admin_buildings(flask_app: Flask):
             if request.method == "GET":
                 # List of all the buildings (name and id)
                 buildings_list = buildings.show_all_buildings(get_db())
-                response.status = 200
+                status = 200
                 response.buildings = buildings_list
             else:
                 # Creates new building, info is passed on the body
@@ -71,9 +71,10 @@ def decorate_admin_buildings(flask_app: Flask):
                 lon = body["longitude"]
                 rad = body["radius"]
                 new_building = buildings.add_building(get_db(), bid, bname, lat, lon, rad)
-                response.status = 200
+                status = 200
                 response.building = new_building
-            return response
+
+            return jsonify(response), status
 
         except IndexError as e:
             return InvalidRequest("Could not fulfill the request " + str(e))
@@ -85,16 +86,17 @@ def decorate_admin_buildings(flask_app: Flask):
             if request.method == "GET":
                 # Return the building info, users list and bots list
                 building = buildings.show_info(get_db(), bid)
-                response.status = 200
+                status = 200
                 response.building = building
             else:
                 # Deletes a building, building id (bid) is passed in query
                 body = request.json
                 bid = body["id"]
                 deleted_bot = bots.delete_bot(get_db(), bid)
-                response.status = 200
+                status = 200
                 response.bot_info = deleted_bot
-            return response
+
+            return jsonify(response), status
 
         except IndexError as e:
             return InvalidRequest("Could not fulfill the request " + str(e))
