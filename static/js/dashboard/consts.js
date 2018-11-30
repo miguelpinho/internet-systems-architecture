@@ -1,0 +1,4 @@
+const NEARBY_REFRESH_TIMEOUT = 1000;
+const LOCATION_REFRESH_TIMEOUT = 10000;
+
+const LOCATION_ENDPOINT = "/api/user/location";
