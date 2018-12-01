@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify, g
 from ApiControllers.Auth import auth_verification
 from ApiControllers.exceptions import InvalidRequest
 from ApiUtils.db import get_db
-from ApiControllers.auth.exceptions import NotAuthenticated
+from ApiControllers.Auth.exceptions import NotAuthenticated
 from DbInterface import user
 
 
