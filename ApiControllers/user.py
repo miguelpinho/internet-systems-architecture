@@ -72,8 +72,23 @@ def decorate_user_routes(flask_app: Flask):
     @auth_verification()  # This is the middleware for authentication
     def user_building():
         """ Handles User Building - Gets user location"""
+        if 'auth_params' in g:
+            user_params = g.auth_params
+            user_id = user_params["uuid"]
+        else:
+            # Something wrong could have happen with the middleware, so throw unauthorized error
+            raise NotAuthenticated("Please Authenticate First")
+        try:
+            building = user.get_user_building(get_db(), user_id)
 
-        return jsonify({"UserId": "This will have some user", "Building": "Somewhere"}), 200
+            if building is None:
+                raise InvalidRequest("User isn't in a building")
+            else:
+                return jsonify({"UserId": user_id, "Building": building}), 200
+
+        except Exception:# TODO: Change this with a explicit exception that reflects exceptions generated from
+            # user.get_user_building()
+            raise InvalidRequest("User isn't in a building")
 
     @flask_app.route("/api/user/radius", methods=["POST"])
     @auth_verification()  # This is the middleware for authentication
@@ -85,6 +100,6 @@ def decorate_user_routes(flask_app: Flask):
     @flask_app.route("/api/user/nearby", methods=["GET"])
     @auth_verification()  # This is the middleware for authentication
     def user_nearby():
-        """ Handles User message radius - Sets user message radius"""
+        """ Handles User nearby users - Gets nearby users"""
 
         return jsonify({"UserId": "This will have some user", "users": ["user1", "user2", "user3"]}), 200

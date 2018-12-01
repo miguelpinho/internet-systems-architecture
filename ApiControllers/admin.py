@@ -106,14 +106,35 @@ def decorate_admin_logs(flask_app: Flask):
     @flask_app.route("/api/admin/logs/users/<ist_id>/messages", methods=["GET"])
     def admin_logs_messages(ist_id=None):
         # Returns messages for that user
-        return f"/api/admin/logs/users/{ist_id}/messages"
+        try:
+            response = {}
+            message_log = logs.get_msgs_user(get_db(), ist_id)
+            status = 200
+            response.logs = message_log
+            return jsonify(response), status
+        except IndexError as e:
+            return InvalidRequest("Could not fulfill the request " + str(e))
 
     @flask_app.route("/api/admin/logs/users/<ist_id>/moves", methods=["GET"])
     def admin_logs_moves(ist_id=None):
         # Returns moves for that user
-        return f"/api/admin/logs/users/{ist_id}/moves"
+        try:
+            response = {}
+            moves_log = logs.get_moves(get_db(), ist_id)
+            status = 200
+            response.logs = moves_log
+            return jsonify(response), status
+        except IndexError as e:
+            return InvalidRequest("Could not fulfill the request " + str(e))
 
     @flask_app.route("/api/admin/logs/building/<bid>", methods=["GET"])
     def admin_logs_building(bid=None):
         # Returns messages in that building
-        return f"/api/admin/logs/buildings/{bid}"
+        try:
+            response = {}
+            building_log = logs.get_msgs_building(get_db(), bid)
+            status = 200
+            response.logs(building_log)
+            return jsonify(response), status
+        except IndexError as e:
+            return InvalidRequest("Could not fulfill the request " + str(e))

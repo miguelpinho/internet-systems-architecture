@@ -20,10 +20,14 @@ def set_position(db, ist_id, latitude, longitude):
 
 
 def get_position(db, ist_id):
-    # return (latitude, longitude) if checked in, null otherwise
+    # return (latitude,longitude) if checked in, null otherwise
     pass
 
 
 def get_close_users(db, ist_id):
     # return [users] list if checked in, null otherwise
+    pass
+
+def get_user_building(db, ist_id):
+    # return building where user is if checked in, null otherwise
     pass
