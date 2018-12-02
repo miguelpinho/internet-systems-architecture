@@ -1,7 +1,11 @@
 from flask import Flask
 import ApiControllers
+from consts import configure_private_consts
 
 app = Flask(__name__)
+
+# Set private consts
+configure_private_consts()
 
 # Instantiate database
 

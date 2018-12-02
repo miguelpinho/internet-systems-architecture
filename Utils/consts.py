@@ -62,3 +62,5 @@ class PrivateConsts:
 
 if __name__ == "__main__":
     configure_private_consts()
+    print(PrivateConsts.FenixApiKeys.FENIX_API_CLIENT_ID)
+    print(PrivateConsts.FenixApiKeys.FENIX_API_CLIENT_SECRET)
