@@ -19,6 +19,10 @@ def set_position(db, ist_id, latitude, longitude):
     pass
 
 
+def set_radius(db, ist_id, radius):
+    pass
+
+
 def get_position(db, ist_id):
     # return (latitude,longitude) if checked in, null otherwise
     pass

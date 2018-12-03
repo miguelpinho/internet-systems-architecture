@@ -80,12 +80,9 @@ def decorate_user_routes(flask_app: Flask):
             raise NotAuthenticated("Please Authenticate First")
         try:
             building = user.get_user_building(get_db(), user_id)
-
-            if building is None:
-                raise InvalidRequest("User isn't in a building")
-            else:
-                return jsonify({"UserId": user_id, "Building": building}), 200
-
+            return jsonify({"UserId": user_id, "Building": building}), 200
+        except TypeError as e:
+            raise InvalidRequest("Cannot fetch user building correctly: " + str(e))
         except Exception:# TODO: Change this with a explicit exception that reflects exceptions generated from
             # user.get_user_building()
             raise InvalidRequest("User isn't in a building")
@@ -94,12 +91,45 @@ def decorate_user_routes(flask_app: Flask):
     @auth_verification()  # This is the middleware for authentication
     def user_radius():
         """ Handles User message radius - Sets user message radius"""
+        if 'auth_params' in g:
+            user_params = g.auth_params
+            user_id = user_params["uuid"]
+        else:
+            # Something wrong could have happen with the middleware, so throw unauthorized error
+            raise NotAuthenticated("Please Authenticate First")
+        try:
+            content = request.json
+            radius = content["radius"]
+            user.set_radius(get_db(), user_id, radius)
+            return jsonify({"UserId": user_id, "Radius": radius}), 200
 
-        return jsonify({"UserId": "This will have some user", "Radius": "5"}), 200
+        except (TypeError, IndexError) as e:
+            raise InvalidRequest("Radius not valid: " + str(e))
+
+        except Exception:  # TODO: Change this with a explicit exception that reflects exceptions generated from
+            # user.get_user_building()
+            raise InvalidRequest("User isn't in a building")
+
 
     @flask_app.route("/api/user/nearby", methods=["GET"])
     @auth_verification()  # This is the middleware for authentication
     def user_nearby():
         """ Handles User nearby users - Gets nearby users"""
+        if 'auth_params' in g:
+            user_params = g.auth_params
+            user_id = user_params["uuid"]
+        else:
+            # Something wrong could have happen with the middleware, so throw unauthorized error
+            raise NotAuthenticated("Please Authenticate First")
+        try:
+            users_list = user.get_close_users(get_db(),user_id)
+            if users_list is None:
+                # return msg "No users close by"
+                pass
+            else:
+                return jsonify({"UserId": user_id, "users": users_list}), 200
 
-        return jsonify({"UserId": "This will have some user", "users": ["user1", "user2", "user3"]}), 200
+        except Exception:  # TODO: Change this with a explicit exception that reflects exceptions generated from
+            # user.get_close_users()
+            raise InvalidRequest("Some error")
+
