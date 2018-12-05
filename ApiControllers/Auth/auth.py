@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, url_for, render_template
 
-from Utils.private_consts import FENIX_API_CLIENT_ID
+from Utils.consts import PrivateConsts
 
 
 def decorate_auth_handlers(flask_app: Flask):
@@ -18,7 +18,7 @@ def decorate_auth_handlers(flask_app: Flask):
 
     @flask_app.route("/auth/client_id")
     def auth_client_id():
-        client_id = FENIX_API_CLIENT_ID
+        client_id = PrivateConsts.FenixApiKeys.FENIX_API_CLIENT_ID
         redirect_url = url_for("auth_login", _external=True)
 
         return jsonify({"client_id": client_id, "redirect_url": redirect_url})
