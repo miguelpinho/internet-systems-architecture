@@ -16,13 +16,25 @@
 import json
 import os
 
-PRIVATE_CONSTS_JSON_FILE_PATH = "private_consts.json"
+from flask import current_app
+
+PRIVATE_CONSTS_JSON_FILE_PATH = "Utils\private_consts.json"
 
 
 class AuthType:
     AUTH_TYPE_ADMIN = "Admin"
     AUTH_TYPE_USER = "User"
     AUTH_TYPE_BOT = "Bot"
+
+
+class FenixApi:
+    CODE_CONFIRM_ENDPOINT = "https://fenix.tecnico.ulisboa.pt/oauth/access_token?client_id={" \
+                            "client_id}&client_secret={client_secret}&redirect_uri={redirect_uri}&code={" \
+                            "code}&grant_type=authorization_code "
+
+
+class Tokens:
+    TOKEN_LENGHT = 20
 
 
 # From here on private consts only
@@ -32,6 +44,7 @@ def configure_private_consts():
     private_consts = {}
     try:
         private_consts_fp = open(PRIVATE_CONSTS_JSON_FILE_PATH)
+
         private_consts = json.load(private_consts_fp)
         private_consts_fp.close()
     except (json.JSONDecodeError, FileNotFoundError) as e:
@@ -48,19 +61,20 @@ def configure_private_consts():
                     # nested_attrname contains the Key name search for them in private_consts.json file
                     elif nested_attrname in private_consts:
                         setattr(subclass, nested_attrname, private_consts[nested_attrname])
+    return PrivateConsts
 
 
 class PrivateConsts:
-    class FenixApiKeys:
-        FENIX_API_CLIENT_ID = "Put your own fenix api id"  # This is a default values
+    class FenixApi:
+        FENIX_API_CLIENT_ID = "Put your own fenix api id"  # This is a default value
         FENIX_API_CLIENT_SECRET = "Put your own fenix api Secret"
 
-    # Here you can add another classes like FenixApiKeys
+    # Here you can add another classes like FenixApi
     # class MySpecialKeys:
     #   BLABLA_SUPER_SECRET = "SECRET"
 
 
 if __name__ == "__main__":
     configure_private_consts()
-    print(PrivateConsts.FenixApiKeys.FENIX_API_CLIENT_ID)
-    print(PrivateConsts.FenixApiKeys.FENIX_API_CLIENT_SECRET)
+    print(PrivateConsts.FenixApi.FENIX_API_CLIENT_ID)
+    print(PrivateConsts.FenixApi.FENIX_API_CLIENT_SECRET)

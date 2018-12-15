@@ -1,4 +1,8 @@
-const NEARBY_REFRESH_TIMEOUT = 1000;
+const NEARBY_REFRESH_TIMEOUT = 10000;
 const LOCATION_REFRESH_TIMEOUT = 10000;
 
 const LOCATION_ENDPOINT = "/api/user/location";
+const POSTMSG_ENDPOINT = "/api/user/message";
+const GETNRBY_ENDPOINT = "/api/user/nearby";
+
+const CONTENT_JSON = "application/json";

@@ -3,6 +3,8 @@ $(document).ready( () => {
     config_location();
     config_send_message();
     config_receive_message();
+    token = getCookie("x-auth")
+    console.log(token)
 });
 
 

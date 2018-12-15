@@ -9,14 +9,23 @@ function handle_send_message(e) {
   //Clean Input Box
   input_box.value = "";
 
-  console.log(message)
+  console.log("Sending: " + message);
 
-  // TODO: Instead of using socket.emit, use ajax
-  // socket.emit("createMessage", {
-  //   text: jQuery("[name=message]").val()
-  // }, function () {
-  //   jQuery("[name=message]").val("");
-  // });
+  $.ajax({
+      type: "POST",
+      url: POSTMSG_ENDPOINT,
+      data: {message:message},
+      success: (data, status, jqXHR)=>{
+          console.log("Message Response received to POSTMSG: "+data);
+          //Update UI with the message content as a personal message
+          display_message(data["message"]);
+      },
+      error: (jqXHR, textStatus, errorThrown) =>{
+          console.log("Error received to POSTMSG: "+textStatus);
+          //TODO: Some type of alert to the user
+      },
+      dataType: CONTENT_JSON
+    });
 }
 
 
