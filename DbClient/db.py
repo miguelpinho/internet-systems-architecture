@@ -9,7 +9,7 @@ def init_db(db):
 
         try:
             cursor.executescript(qry)
-        except: sqlite3.Error as e:
+        except sqlite3.Error as e:
             print("Error initializing sqlite3 DB: {}".
                     format(e.args[0]))
 
@@ -19,5 +19,7 @@ def get_db():
     return db
 
 def close_db(db):
+    db.commit() # FIXME: makes sense?
+
     db.close()
 
