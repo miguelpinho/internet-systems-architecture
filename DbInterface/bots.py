@@ -1,5 +1,8 @@
+import sqlite3
+
 def add_bot(db, bid):
-    # adds bot (creates bot token and puts time of creation in the record and return the token in the end
+    # adds bot (creates bot token and puts time of creation in
+    # the record and return the token in the end
     bot_token = 0 # TODO
 
     cur = db.cursor()
@@ -9,7 +12,7 @@ def add_bot(db, bid):
             {"bot_token": bot_token, "bid": bid})
     except sqlite3.Error as e:
         print("Error adding bot sqlite3 DB: {}".
-                format(e.args[0]))
+              format(e.args[0]))
     else:
         db.commit()
 
@@ -24,10 +27,10 @@ def delete_bot(db, bot_token):
 
     try:
         cur.execute("DELETE FROM bot WHERE bot.token = :bot_token;",
-            {"bot_token": bot_token})
+                    {"bot_token": bot_token})
     except sqlite3.Error as e:
         print("Error removing bot sqlite3 DB: {}".
-                format(e.args[0]))
+              format(e.args[0]))
     else:
         db.commit()
 
@@ -38,10 +41,10 @@ def list_bots_by_building(db, bid):
 
     try:
         cur.execute("SELECT bot.token FROM bot WHERE bot.building = :bid;",
-            {"bid": bid})
+                    {"bid": bid})
     except sqlite3.Error as e:
         print("Error searching bots by building sqlite3 DB: {}".
-                format(e.args[0]))
+              format(e.args[0]))
 
         return []
 
@@ -53,10 +56,10 @@ def list_bots(db):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT bot.token FROM bot")
+        cur.execute("SELECT bot.token FROM bot;")
     except sqlite3.Error as e:
         print("Error searching bots by building sqlite3 DB: {}".
-                format(e.args[0]))
+              format(e.args[0]))
 
         return []
 
@@ -69,12 +72,14 @@ def where_is_bot(db, bot_token):
     # TODO: try to get from cache
 
     # FIXME: this is for bid, but it is easy to change
+    cur = db.cursor()
+
     try:
-        cur.execute("SELECT bot.building FROM bot WHERE bot.token = :bot_token",
-            {"bot_token": bot_token})
+        cur.execute("SELECT bot.building FROM bot WHERE bot.token = :bot_token;",
+                    {"bot_token": bot_token})
     except sqlite3.Error as e:
         print("Error searching bot sqlite3 DB: {}".
-                format(e.args[0]))
+              format(e.args[0]))
 
         return []
 
@@ -92,4 +97,6 @@ def where_is_bot(db, bot_token):
 
 def send_msg(db, bot_token, message):
     # return message of bot
+
+    # FIXME: what should I do?
     pass

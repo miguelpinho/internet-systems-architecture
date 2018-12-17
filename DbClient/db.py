@@ -11,7 +11,7 @@ def init_db(db):
             cursor.executescript(qry)
         except sqlite3.Error as e:
             print("Error initializing sqlite3 DB: {}".
-                    format(e.args[0]))
+                  format(e.args[0]))
 
 def get_db():
     db = sqlite3.connect(DbAccess.DB_NAME)

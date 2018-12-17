@@ -6,7 +6,7 @@ CREATE TABLE building (
     id INTEGER,
     name VARCHAR(100) UNIQUE NOT NULL,
     latitude NUMERIC(6, 3) NOT NULL,
-    latitude NUMERIC(6, 3) NOT NULL,
+    longitude NUMERIC(6, 3) NOT NULL,
     radius NUMERIC(6, 3) NOT NULL,
     PRIMARY KEY (id)
 );
