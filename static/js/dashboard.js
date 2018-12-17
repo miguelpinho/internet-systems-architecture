@@ -7,23 +7,6 @@ $(document).ready( () => {
     console.log(token)
 });
 
-
-// TODO: Change socket.on to handler called (timer) function
-// socket.on("updateRoomName", function (roomName) {
-//   jQuery("#people_room").text(roomName);
-// });
-
-// TODO: Change socket.on to handler called (timer) function
-// socket.on("updateUserList", function (users) {
-//   let ul = jQuery("<ul></ul>");
-//
-//   users.forEach(function (user) {
-//     ul.append(jQuery("<li></li>").text(user));
-//   });
-//
-//   jQuery("#users").html(ul);
-// });
-
 // TODO: Change socket.on to message queue
 // socket.on("newMessage", function (message) {
 //   let formattedTime = moment(message.createdAt).format("h:mm a");

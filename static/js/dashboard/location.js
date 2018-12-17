@@ -17,9 +17,11 @@ function getLocation() {
                 default :
                     console.log("An unknown error occurred.");
             }
+            location_error_dialog(error.message);
         });
     } else {
         console.log("Geolocation is not supported by this browser.");
+        location_error_dialog("Geolocation is not supported by this browser.");
     }
 }
 
@@ -34,10 +36,14 @@ function get_location_success(position) {
         try {
             let response = JSON.parse(oReq.responseText);
             console.log(response);
+            // TODO: Get Building from response, add it to UI
+            //   jQuery("#people_room").text(roomName);
         }
         catch (e) {
             console.log("Could not handle location post request response");
             // Condition user intentions due to no location, or use the last location it had
+            // Send alert
+            location_error_dialog("Could not handle server respose.")
         }
     });
 
@@ -55,4 +61,23 @@ function refresh_location() {
 function config_location() {
     refresh_location();
     setInterval(refresh_location, LOCATION_REFRESH_TIMEOUT);
+}
+
+function location_error_dialog(message) {
+    let new_dialog = $("#dialogs");
+    new_dialog.dialog({
+        resizable:false,
+        draggable: false,
+        modal: true,
+        title: "Confirmation",
+        open: function() {
+            var markup = message;
+            $(this).html(markup);
+            },
+        buttons: {
+            Ok: function() {
+            $( this ).dialog( "close" );
+            }
+        }
+    });
 }

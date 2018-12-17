@@ -16,10 +16,6 @@ function scrollToBottom () {
     }
 }
 
-function config_receive_message() {
-    //TODO: CONFIG MESSAGE_QUEUES
-}
-
 function display_message(message) {
     var template = $("#message-template").html();
     var html = Mustache.render(template, {
@@ -29,4 +25,8 @@ function display_message(message) {
     });
     jQuery("#messages").append(html);
     scrollToBottom();
+}
+
+function config_receive_message() {
+    //TODO: CONFIG MESSAGE_QUEUES
 }

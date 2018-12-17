@@ -1,3 +1,5 @@
+from time import strftime, gmtime
+
 from flask import Flask, request, jsonify, g
 
 from ApiControllers.Auth import auth_verification
@@ -30,7 +32,8 @@ def decorate_user_routes(flask_app: Flask):
                 raise InvalidRequest("message not valid")
 
             # Handle the request properly
-            return jsonify({"UserId": user_id, "Message": message, "Result": "Message Sent"}), 200
+            return jsonify({"UserId": user_id, "Message": {"text": message, "time": strftime("%Y-%m-%d %H:%M:%S",
+                            gmtime()), "from": user_id}, "Result": "Message Sent"}), 200
 
         else:  # Handle the request for a list of messages (GET)
             try:

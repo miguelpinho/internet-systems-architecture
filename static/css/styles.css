@@ -26,20 +26,19 @@ button {
   transition: background .3s ease;
 }
 
-span {
-  border: none;
-  background: #265f82;
-  color: white;
-  cursor: pointer;
-  padding: 10px;
-  transition: background .3s ease;
-}
+/*span {*/
+  /*border: none;*/
+  /*background: #265f82;*/
+  /*color: white;*/
+  /*cursor: pointer;*/
+  /*padding: 10px;*/
+  /*transition: background .3s ease;*/
+/*}*/
 
 button:hover {
   border: none;
   background: #1F4C69;
   color: white;
-  padding: 10px;
 }
 
 button:disabled {
@@ -243,4 +242,8 @@ button:disabled {
 /* Show the dropdown menu on hover */
 .dropdown:hover .dropdown-content {
    display: block;
+}
+
+.ui-dialog-titlebar-close {
+    visibility: hidden;
 }

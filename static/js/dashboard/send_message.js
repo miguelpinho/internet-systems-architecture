@@ -14,17 +14,17 @@ function handle_send_message(e) {
   $.ajax({
       type: "POST",
       url: POSTMSG_ENDPOINT,
-      data: {message:message},
+      data: JSON.stringify({message:message}),
+      contentType: "application/json",
       success: (data, status, jqXHR)=>{
           console.log("Message Response received to POSTMSG: "+data);
           //Update UI with the message content as a personal message
-          display_message(data["message"]);
+          display_message(data["Message"]);
       },
       error: (jqXHR, textStatus, errorThrown) =>{
-          console.log("Error received to POSTMSG: "+textStatus);
+          console.log("Error received to POSTMSG: "+textStatus+"  "+errorThrown);
           //TODO: Some type of alert to the user
       },
-      dataType: CONTENT_JSON
     });
 }
 
