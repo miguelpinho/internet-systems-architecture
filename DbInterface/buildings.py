@@ -6,11 +6,11 @@ def add_building(db, bid, bname, latitude, longitude, radius):
 
     try:
         cur.execute("INSERT INTO building VALUES (:bid, :bname, :lat, :long, :radius);",
-            {"bid": bid, "bname":bname, "lat":latitude, "long":longitude,
+            {"bid": bid, "bname": bname, "lat": latitude, "long": longitude,
              "radius":radius})
     except sqlite3.Error as e:
         print("Error adding building sqlite3 DB: {}".
-                format(e.args[0]))
+              format(e.args[0]))
     else:
         db.commit()
 
