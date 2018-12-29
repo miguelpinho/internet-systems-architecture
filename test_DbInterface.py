@@ -76,3 +76,18 @@ log.store_msg_user(db, "ist131313", "messagem B4")
 print(log.get_msgs_user(db, "ist431313"))
 print(log.get_msgs_user(db, "ist131313"))
 
+
+# TEST: building message log
+log.store_msg_building(db, 101, "messagem C1")
+log.store_msg_building(db, 33, "messagem D1")
+
+building.add_building(db, 33, "civil", 310.1, 433.9, 13.0)
+log.store_msg_building(db, 101, "messagem C2")
+log.store_msg_building(db, 33, "messagem D2")
+log.store_msg_building(db, 101, "messagem C3")
+log.store_msg_building(db, 33, "messagem D3")
+
+print(log.get_msgs_building(db, 101))
+print(log.get_msgs_building(db, 33))
+
+

@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS moves_user;
 DROP TABLE IF EXISTS message_building;
 DROP TABLE IF EXISTS message_user;
 DROP TABLE IF EXISTS bot;
@@ -26,8 +27,8 @@ CREATE TABLE bot (
     /* id INTEGER NOT NULL AUTO_INCREMENT, */
     id INTEGER PRIMARY KEY,
     token VARCHAR(20) UNIQUE NOT NULL,
-    building INTEGER,
-    FOREIGN KEY (building) REFERENCES building(id)
+    building INTEGER
+    /* FOREIGN KEY (building) REFERENCES building(id) */
 );
 
 CREATE TABLE message_user (
