@@ -2,6 +2,7 @@ import DbClient.db as clientDB
 import DbInterface.buildings as building
 import DbInterface.bots as bots
 import DbInterface.user as user
+import DbInterface.logs as log
 
 db = clientDB.get_db()
 
@@ -51,11 +52,27 @@ print(user.get_user_building(db, "ist131313"))
 user.set_position(db, "ist231313", 90.0, 51.1)
 user.set_position(db, "ist331313", 90.0, 31.0) # This one should not appear
 user.set_position(db, "ist431313", 85.0, 43.1)
+print(user.get_close_users(db, "ist131313", 90.0, 41.1, 10.0))
 
+user.clear_position(db, "ist431313")
 print(user.get_close_users(db, "ist131313", 90.0, 41.1, 10.0))
 
 
 # TEST: show all users in a building
 print(building.show_users(db, 101))
 
+
+# TEST: user message log
+log.store_msg_user(db, "ist431313", "messagem A1")
+log.store_msg_user(db, "ist131313", "messagem B1")
+log.store_msg_user(db, "ist131313", "messagem B2")
+log.store_msg_user(db, "ist431313", "messagem A2")
+log.store_msg_user(db, "ist431313", "messagem A3")
+log.store_msg_user(db, "ist431313", "messagem A4")
+log.store_msg_user(db, "ist431313", "messagem A5")
+log.store_msg_user(db, "ist131313", "messagem B3")
+log.store_msg_user(db, "ist131313", "messagem B4")
+
+print(log.get_msgs_user(db, "ist431313"))
+print(log.get_msgs_user(db, "ist131313"))
 
