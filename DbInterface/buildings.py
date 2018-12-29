@@ -5,9 +5,10 @@ def add_building(db, bid, bname, latitude, longitude, radius):
     cur = db.cursor()
 
     try:
-        cur.execute("INSERT INTO building VALUES (:bid, :bname, :lat, :long, :radius);",
-            {"bid": bid, "bname": bname, "lat": latitude, "long": longitude,
-             "radius":radius})
+        cur.execute("INSERT INTO building (id, name, latitude, longitude, radius) \
+                    VALUES (:bid, :bname, :lat, :long, :radius);",
+                    {"bid": bid, "bname": bname, "lat": latitude, "long": longitude,
+                    "radius":radius})
     except sqlite3.Error as e:
         print("Error adding building sqlite3 DB: {}".
               format(e.args[0]))
@@ -38,15 +39,17 @@ def show_users(db, bid):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT ist_user.ist_ID FROM ist_user WHERE ist_user.cur_building = :bid;",
+        cur.execute("SELECT ist_id FROM ist_user WHERE ist_user.cur_building = :bid;",
                     {"bid": bid})
     except sqlite3.Error as e:
-        print("Error searching for users in buildings sqlite3 DB: {}".
+        print("Error getting all users in a building sqlite3 DB: {}".
               format(e.args[0]))
 
-        return []
+        return None
 
-    return cur.fetchall()
+    users = cur.fetchall()
+
+    return  [u[0] for u in users]
 
 
 def show_info(db, bid):
@@ -62,9 +65,7 @@ def show_info(db, bid):
 
         return []
 
-    bid = cur.fetchone()[0]
-
-    return bid
+    return cur.fetchone()
 
 
 def show_all_buildings(db):
@@ -72,12 +73,12 @@ def show_all_buildings(db):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT id, name FROM building;")
+        cur.execute("SELECT * FROM building;")
     except sqlite3.Error as e:
         print("Error searching bot sqlite3 DB: {}".
               format(e.args[0]))
 
         return []
 
-    return cur.fetchone()
+    return cur.fetchall()
 

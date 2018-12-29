@@ -1,15 +1,17 @@
 import sqlite3
+from random import randint
 
 def add_bot(db, bid):
     # adds bot (creates bot token and puts time of creation in
     # the record and return the token in the end
-    bot_token = 0 # TODO
+    bot_token = randint(0, 10000) # FIXME
 
     cur = db.cursor()
 
     try:
-        cur.execute("INSERT INTO bot VALUES (:bot_token, :bot_build);",
-            {"bot_token": bot_token, "bid": bid})
+        cur.execute("INSERT INTO bot (token, building) \
+                    VALUES (:bot_token, :bid);",
+                    {"bot_token": bot_token, "bid": bid})
     except sqlite3.Error as e:
         print("Error adding bot sqlite3 DB: {}".
               format(e.args[0]))
@@ -17,6 +19,8 @@ def add_bot(db, bid):
         db.commit()
 
     # TODO: Put in cache?
+
+    return bot_token
 
 
 def delete_bot(db, bot_token):
@@ -48,7 +52,8 @@ def list_bots_by_building(db, bid):
 
         return []
 
-    return cur.fetchall()
+    bots = cur.fetchall()
+    return [b[0] for b in bots]
 
 
 def list_bots(db):
@@ -63,7 +68,8 @@ def list_bots(db):
 
         return []
 
-    return cur.fetchall()
+    bots = cur.fetchall()
+    return [b[0] for b in bots]
 
 
 def where_is_bot(db, bot_token):
