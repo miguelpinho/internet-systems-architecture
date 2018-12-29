@@ -17,7 +17,6 @@ CREATE TABLE ist_user (
     ist_ID VARCHAR(20),
     latitude NUMERIC(6, 3),
     longitude NUMERIC(6, 3),
-    /* radius NUMERIC(6, 3), */
     cur_building INTEGER,
     PRIMARY KEY (ist_ID),
     FOREIGN KEY (cur_building) REFERENCES building(id)
@@ -28,27 +27,32 @@ CREATE TABLE bot (
     id INTEGER PRIMARY KEY,
     token VARCHAR(20) UNIQUE NOT NULL,
     building INTEGER,
-    /* PRIMARY KEY (id), */
     FOREIGN KEY (building) REFERENCES building(id)
 );
 
 CREATE TABLE message_user (
     /* id INTEGER NOT NULL AUTO_INCREMENT, */
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT, /* always a bigger id */
     ist_ID VARCHAR(20),
-    message TEXT,
-    /* PRIMARY KEY (id), */
-    FOREIGN KEY (ist_ID) REFERENCES ist_user(ist_ID)
+    message TEXT
+    /* not a good idea impose that user must exist: */
+    /* FOREIGN KEY (ist_ID) REFERENCES ist_user(ist_ID) */
 );
 
 CREATE TABLE message_building (
     /* id INTEGER NOT NULL AUTO_INCREMENT, */
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT, /* always a bigger id */
     building INTEGER,
     message TEXT,
-    /* PRIMARY KEY (id), */
     FOREIGN KEY (building) REFERENCES building(id)
 );
+
+CREATE TABLE moves_user (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    building INTEGER NOT NULL,
+    state VARCHAR(5) NOT NULL
+);
+/* TODO: make state enum */
 
 
 /* auto update user building */

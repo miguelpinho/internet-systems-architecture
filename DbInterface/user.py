@@ -1,22 +1,5 @@
 import sqlite3
 
-# def check_in(db, ist_id):
-#     pass
-
-
-# def check_out(db, ist_id):
-#     pass
-
-
-# def send_msg(db, ist_id, msg):
-#     pass
-
-
-# def get_msgs(db, ist_id):
-#     # return [msg] list
-#     pass
-
-
 def set_position(db, ist_id, latitude, longitude):
     # update position
     cur = db.cursor()
@@ -33,23 +16,6 @@ def set_position(db, ist_id, latitude, longitude):
         db.commit()
 
     return (latitude, longitude)
-
-# def set_radius(db, ist_id, radius):
-#     cur = db.cursor()
-
-#     try:
-#         cur.execute("UPDATE ist_user SET ist_user.radius = :radius,\
-#                     WHERE ist_user.ist_id = :ist_id;",
-#                     {"ist_id": ist_id, "radius": radius})
-#     except sqlite3.Error as e:
-#         print("Error set user radius sqlite3 DB: {}".
-#               format(e.args[0]))
-
-#         return None
-#     else:
-#         db.commit()
-
-#     return radius
 
 
 def get_position(db, ist_id):
@@ -75,7 +41,7 @@ def clear_position(db, ist_id):
     cur = db.cursor()
 
     try:
-        cur.execute("DELETE FROM ist_user WHERE ist_user.ist_ID = :ist_id;",
+        cur.execute("UPDATE ist_user SET latitude = null, longitude = null, cur_building = null WHERE ist_user.ist_ID = :ist_id;",
                     {"ist_id": ist_id})
     except sqlite3.Error as e:
         print("Error clearing user location sqlite3 DB: {}".
