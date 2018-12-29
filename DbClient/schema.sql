@@ -57,7 +57,20 @@ CREATE TABLE moves_user (
 
 
 /* auto update user building */
-CREATE TRIGGER set_building AFTER INSERT
+CREATE TRIGGER set_building_ins AFTER INSERT
+ON ist_user
+FOR EACH ROW
+BEGIN
+    UPDATE ist_user SET cur_building =
+    (
+        SELECT MIN(B.id) FROM building AS B
+        WHERE ABS(B.latitude - NEW.latitude) <= B.radius
+        AND ABS(B.longitude - NEW.longitude) <= B.radius
+    )
+    WHERE ist_ID = NEW.ist_ID;
+END;
+
+CREATE TRIGGER set_building_upd AFTER UPDATE OF latitude, longitude
 ON ist_user
 FOR EACH ROW
 BEGIN

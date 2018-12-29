@@ -36,13 +36,13 @@ print(btokens)
 print(bots.list_bots(db))
 
 
-
 # TEST: set user location and get current building
 user.set_position(db, "ist131313", 100.0, 31.1)
 print(user.get_position(db, "ist131313"))
 
 user.clear_position(db, "ist131313")
 print(user.get_position(db, "ist131313"))
+print(user.get_user_building(db, "ist131313"))
 
 user.set_position(db, "ist131313", 90.0, 41.1)
 print(user.get_user_building(db, "ist131313"))

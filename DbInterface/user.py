@@ -33,6 +33,9 @@ def get_position(db, ist_id):
 
     res = cur.fetchone()
 
+    if res[0] is None or res[1] is None:
+        res = None
+
     return res
 
 
