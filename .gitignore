@@ -1,3 +1,10 @@
 .idea/
 venv/
 private_consts.json
+
+# tmp files
+__pycache__/
+*.py[cod]
+*$py.class
+
+example.db
