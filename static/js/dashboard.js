@@ -1,26 +1,12 @@
 $(document).ready( () => {
+    socket = io.connect('http://' + document.domain + ':' + location.port);
     config_nearby();
     config_location();
     config_send_message();
     config_receive_message();
+    token = getCookie("x-auth")
+    console.log(token)
 });
-
-
-// TODO: Change socket.on to handler called (timer) function
-// socket.on("updateRoomName", function (roomName) {
-//   jQuery("#people_room").text(roomName);
-// });
-
-// TODO: Change socket.on to handler called (timer) function
-// socket.on("updateUserList", function (users) {
-//   let ul = jQuery("<ul></ul>");
-//
-//   users.forEach(function (user) {
-//     ul.append(jQuery("<li></li>").text(user));
-//   });
-//
-//   jQuery("#users").html(ul);
-// });
 
 // TODO: Change socket.on to message queue
 // socket.on("newMessage", function (message) {

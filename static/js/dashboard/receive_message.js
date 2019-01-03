@@ -16,6 +16,31 @@ function scrollToBottom () {
     }
 }
 
+function display_message(message) {
+    var template = $("#message-template").html();
+    var html = Mustache.render(template, {
+        text: message.text,
+        createdAt: message.time,
+        from: message.from
+    });
+    jQuery("#messages").append(html);
+    scrollToBottom();
+}
+
 function config_receive_message() {
+    // Socket.io connection
+
+    socket.on('connect', () => {
+        socket.emit('handshake', {data: getCookie("x-auth")});
+    });
+
+    socket.on("user_message", (message) =>{
+        console.log("Message Received: "+message)
+        display_message(message);
+    });
+
+    socket.on("disconnect", ()=>{
+        console.log("Disconnected from the io server");
+    })
 
 }
