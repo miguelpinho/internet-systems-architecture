@@ -1,7 +1,8 @@
 from flask import Flask, g
 import ApiControllers
-from DbClient.db import close_db
+from DbClient.db import close_db, init_db, get_db
 from QueueInterface.exchange import create_exchanges
+from QueueInterface.logs import create_logs_queues
 from consts import configure_private_consts
 
 app = Flask(__name__)
@@ -14,11 +15,14 @@ sio_class = ApiControllers.Sockio(private_consts)
 sio = sio_class.config_socketio(app)
 
 # Instantiate database
+init_db(get_db())
 
 # Instantiate db_interfaces
 
 # Create message queue exchanges
 create_exchanges(private_consts)
+# Create message queues for logs
+create_logs_queues(private_consts)
 
 # Instantiate all the APIs with the db_interface passed in the second
 ApiControllers.decorate_web_app(app)

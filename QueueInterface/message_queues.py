@@ -15,8 +15,8 @@ def create_queue(channel):
     return result.method.queue
 
 
-def bind_queue(channel, queue_id, exchange):
-    channel.queue_bind(queue=queue_id, exchange=exchange)
+def bind_queue(channel, queue_id, exchange, routing_key=None):
+    channel.queue_bind(queue=queue_id, exchange=exchange, routing_key=routing_key)
 
 
 def rebind_queue(channel, queue_id, exchange, routing_key):
