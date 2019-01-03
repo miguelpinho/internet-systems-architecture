@@ -18,7 +18,7 @@ import os
 
 from flask import current_app
 
-PRIVATE_CONSTS_JSON_FILE_PATH = "Utils\private_consts.json"
+PRIVATE_CONSTS_JSON_FILE_PATH = os.path.join("Utils", "private_consts.json")
 
 
 class AuthType:
@@ -31,6 +31,11 @@ class FenixApi:
     CODE_CONFIRM_ENDPOINT = "https://fenix.tecnico.ulisboa.pt/oauth/access_token?client_id={" \
                             "client_id}&client_secret={client_secret}&redirect_uri={redirect_uri}&code={" \
                             "code}&grant_type=authorization_code "
+
+
+class Queues:
+    BOTS_EXCHANGE = "bots_exchange"
+    USER_EXCHANGE = "user_exchange"
 
 
 class Tokens:
@@ -69,6 +74,10 @@ class PrivateConsts:
         FENIX_API_CLIENT_ID = "Put your own fenix api id"  # This is a default value
         FENIX_API_CLIENT_SECRET = "Put your own fenix api Secret"
 
+    class Queues:
+        QUEUE_HOST = "localhost"
+        QUEUE_PASSWORD = "None"
+        QUEUE_USER = "None"
     # Here you can add another classes like FenixApi
     # class MySpecialKeys:
     #   BLABLA_SUPER_SECRET = "SECRET"

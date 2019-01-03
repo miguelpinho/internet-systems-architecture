@@ -2,10 +2,15 @@ from flask import Flask
 import ApiControllers
 from consts import configure_private_consts
 
+
 app = Flask(__name__)
 
 # Set private consts
 private_consts = configure_private_consts()
+
+# Instantiate socketio interface
+sio_class = ApiControllers.Sockio(private_consts)
+sio = sio_class.config_socketio(app)
 
 # Instantiate database
 
@@ -22,5 +27,6 @@ ApiControllers.decorate_auth_handlers(app, private_consts)
 ApiControllers.decorate_error_handlers(app)
 ApiControllers.decorate_auth_error_handlers(app)
 
+
 if __name__ == '__main__':
-    app.run()
+    sio.run(app)

@@ -28,5 +28,19 @@ function display_message(message) {
 }
 
 function config_receive_message() {
-    //TODO: CONFIG MESSAGE_QUEUES
+    // Socket.io connection
+
+    socket.on('connect', () => {
+        socket.emit('handshake', {data: getCookie("x-auth")});
+    });
+
+    socket.on("user_message", (message) =>{
+        console.log("Message Received: "+message)
+        display_message(message);
+    });
+
+    socket.on("disconnect", ()=>{
+        console.log("Disconnected from the io server");
+    })
+
 }

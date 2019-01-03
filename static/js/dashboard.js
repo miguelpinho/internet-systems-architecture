@@ -1,4 +1,5 @@
 $(document).ready( () => {
+    socket = io.connect('http://' + document.domain + ':' + location.port);
     config_nearby();
     config_location();
     config_send_message();

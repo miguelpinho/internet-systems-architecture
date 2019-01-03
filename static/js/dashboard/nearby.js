@@ -15,7 +15,6 @@ function refresh_nearby() {
         },
         error: (jqXHR, textStatus, errorThrown) =>{
           console.log("Error received to GETNRBY: "+textStatus);
-          //TODO: Some type of alert to the user
         },
         dataType: CONTENT_JSON
     });

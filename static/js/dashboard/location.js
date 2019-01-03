@@ -17,50 +17,47 @@ function getLocation() {
                 default :
                     console.log("An unknown error occurred.");
             }
-            location_error_dialog(error.message);
+            location = LOCATION_NO;
+            clearInterval(location_timer_code);
+  //          location_error_dialog(error.message);
         });
     } else {
         console.log("Geolocation is not supported by this browser.");
-        location_error_dialog("Geolocation is not supported by this browser.");
+        location = LOCATION_NO;
+        clearInterval(location_timer_code);
+//        location_error_dialog("Geolocation is not supported by this browser.");
     }
 }
 
 function get_location_success(position) {
     let lat = position.coords.latitude;
     let lon = position.coords.longitude;
-    let json_body = JSON.stringify({lat,lon});
+    let json_body = JSON.stringify({"body":{lat,lon}});
 
-    let oReq = new XMLHttpRequest(); // New ajax request
-
-    oReq.addEventListener("load", () => {
-        try {
-            let response = JSON.parse(oReq.responseText);
-            console.log(response);
-            // TODO: Get Building from response, add it to UI
-            //   jQuery("#people_room").text(roomName);
-        }
-        catch (e) {
-            console.log("Could not handle location post request response");
-            // Condition user intentions due to no location, or use the last location it had
-            // Send alert
-            location_error_dialog("Could not handle server respose.")
-        }
-    });
-
-    oReq.open("POST", LOCATION_ENDPOINT);
-    oReq.setRequestHeader("Content-type", "application/json; charset=UTF-8");
-    oReq.send(json_body);
+    socket.emit("building_change", json_body)
+    user_location_status = LOCATION_TRY;
 }
 
 
 function refresh_location() {
-    // TODO: Try to minimize unnecessary requests, or just remove this
-    getLocation()
+    if(user_location_status !== LOCATION_TRY) getLocation()
 }
 
 function config_location() {
+    socket.on("building_change_success",(body)=>{
+        if(body["success"] === "yes"){
+            // TODO: Get Building from response, add it to UI
+            //   jQuery("#people_room").text(roomName);
+            user_location_status = LOCATION_YES;
+        }
+        else {
+            user_location_status = LOCATION_NO;
+            console.log("Error in building change")
+        }
+
+    });
     refresh_location();
-    setInterval(refresh_location, LOCATION_REFRESH_TIMEOUT);
+    location_timer_code = setInterval(refresh_location, LOCATION_REFRESH_TIMEOUT);
 }
 
 function location_error_dialog(message) {
