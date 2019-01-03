@@ -1,19 +1,21 @@
-import sqlite3
+import psycopg2
 
 def set_position(db, ist_id, latitude, longitude):
     # update position
     cur = db.cursor()
 
     try:
-        cur.execute("INSERT or REPLACE INTO ist_user (ist_ID, latitude, longitude) VALUES (:ist_id, :lat, :long);",
+        cur.execute("INSERT or REPLACE INTO ist_user (ist_ID, latitude, longitude) VALUES (%(ist_id)s, %(lat)s, %(long)s);",
                     {"ist_id": ist_id, "lat": latitude, "long": longitude})
-    except sqlite3.Error as e:
-        print("Error set user position sqlite3 DB: {}".
+    except psycopg2.Error as e:
+        print("Error set user position psycopg2 DB: {}".
               format(e.args[0]))
 
         return None
     else:
         db.commit()
+    finally:
+        cur.close()
 
     return (latitude, longitude)
 
@@ -23,13 +25,15 @@ def get_position(db, ist_id):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT latitude, longitude FROM ist_user WHERE ist_user.ist_ID = :ist_id;",
+        cur.execute("SELECT latitude, longitude FROM ist_user WHERE ist_user.ist_ID = %(ist_id)s;",
                     {"ist_id": ist_id})
-    except sqlite3.Error as e:
-        print("Error getting user location sqlite3 DB: {}".
+    except psycopg2.Error as e:
+        print("Error getting user location psycopg2 DB: {}".
               format(e.args[0]))
 
         return None
+    finally:
+        cur.close()
 
     res = cur.fetchone()
 
@@ -44,29 +48,40 @@ def clear_position(db, ist_id):
     cur = db.cursor()
 
     try:
-        cur.execute("UPDATE ist_user SET latitude = null, longitude = null, cur_building = null WHERE ist_user.ist_ID = :ist_id;",
+        cur.execute("UPDATE ist_user SET latitude = null, longitude = null, cur_building = null WHERE ist_user.ist_ID = %(ist_id)s;",
                     {"ist_id": ist_id})
-    except sqlite3.Error as e:
-        print("Error clearing user location sqlite3 DB: {}".
+    except psycopg2.Error as e:
+        print("Error clearing user location psycopg2 DB: {}".
               format(e.args[0]))
+    finally:
+        cur.close()
 
 
-def get_close_users(db, ist_id, latitude, longitude, radius):
+def get_close_users(db, ist_id, radius):
     # return [users] of close users
+    pos = get_position(db, ist_id)
+
+    if pos in None:
+        return None
+
+    (latitude, longitude) = pos
+
     (lat_low, lat_high)  = (latitude - radius, latitude + radius)
     (long_low, long_high)  = (longitude - radius, longitude + radius)
 
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT ist_id FROM ist_user WHERE latitude >= :lat_low AND latitude <= :lat_high \
-                    AND longitude >= :long_low AND longitude <= :long_high AND ist_id <> :ist_id;",
+        cur.execute("SELECT ist_id FROM ist_user WHERE latitude >= %(lat_low)s AND latitude <= %(lat_high)s \
+                    AND longitude >= %(long_low)s AND longitude <= %(long_high)s AND ist_id <> %(ist_id)s;",
                     {"ist_id": ist_id, "lat_low": lat_low, "lat_high":lat_high,
                     "long_low":long_low, "long_high": long_high})
 
-    except sqlite3.Error as e:
-        print("Error getting close users sqlite3 DB: {}".
+    except psycopg2.Error as e:
+        print("Error getting close users psycopg2 DB: {}".
               format(e.args[0]))
+    finally:
+        cur.close()
 
     users = cur.fetchall()
 
@@ -78,13 +93,15 @@ def get_user_building(db, ist_id):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT cur_building FROM ist_user WHERE ist_user.ist_ID = :ist_id;",
+        cur.execute("SELECT cur_building FROM ist_user WHERE ist_user.ist_ID = %(ist_id)s;",
                     {"ist_id": ist_id})
-    except sqlite3.Error as e:
-        print("Error getting user building sqlite3 DB: {}".
+    except psycopg2.Error as e:
+        print("Error getting user building psycopg2 DB: {}".
               format(e.args[0]))
 
         return None
+    finally:
+        cur.close()
 
     res = cur.fetchone()
 

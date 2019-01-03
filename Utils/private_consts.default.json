@@ -1,5 +1,9 @@
 {
 //  Just uncoment this, and change name to private_consts.json to use the file as config
 //  "FENIX_API_CLIENT_ID": "SomeExample",
-//  "FENIX_API_CLIENT_SECRET": "AnotherExample"
+//  "FENIX_API_CLIENT_SECRET": "AnotherExample",
+//  "POSTGRE_DATABASE_NAME": "DbName",
+//  "POSTGRE_DATABASE_USER": "DbUser",
+//  "POSTGRE_DATABASE_HOST": "HostIP",
+//  "POSTGRE_DATABASE_PW": "Password"
 }

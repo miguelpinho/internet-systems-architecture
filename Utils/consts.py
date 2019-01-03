@@ -58,6 +58,11 @@ class PrivateConsts:
     # Here you can add another classes like FenixApiKeys
     # class MySpecialKeys:
     #   BLABLA_SUPER_SECRET = "SECRET"
+    class DatabaseKeys:
+        POSTGRE_DATABASE_NAME = "Put the postgre database name"
+        POSTGRE_DATABASE_USER = "Put the postgre database user"
+        POSTGRE_DATABASE_HOST = "Put the postgre host ip here"
+        POSTGRE_DATABASE_PW = "Put the postgre password"
 
 
 if __name__ == "__main__":

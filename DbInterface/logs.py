@@ -1,4 +1,4 @@
-import sqlite3
+import psycopg2
 
 # def store_move(db, ist_id, latitude, longitude):
 #     pass
@@ -9,12 +9,14 @@ def store_msg_user(db, ist_id, msg):
 
     try:
         cur.execute("INSERT INTO message_user (ist_id, message) \
-                    VALUES (:ist_id, :msg);", {"ist_id": ist_id, "msg": msg})
-    except sqlite3.Error as e:
-        print("Error adding user msg log sqlite3 DB: {}".
+                    VALUES (%(ist_id)s, %(msg)s);", {"ist_id": ist_id, "msg": msg})
+    except psycopg2.Error as e:
+        print("Error adding user msg log psycopg2 DB: {}".
               format(e.args[0]))
     else:
         db.commit()
+    finally:
+        cur.close()
 
 
 def store_msg_building(db, bid, msg):
@@ -22,12 +24,14 @@ def store_msg_building(db, bid, msg):
 
     try:
         cur.execute("INSERT INTO message_building (building, message) \
-                    VALUES (:bid, :msg);", {"bid": bid, "msg": msg})
-    except sqlite3.Error as e:
-        print("Error adding building msg log sqlite3 DB: {}".
+                    VALUES (%(bid)s, %(msg)s);", {"bid": bid, "msg": msg})
+    except psycopg2.Error as e:
+        print("Error adding building msg log psycopg2 DB: {}".
               format(e.args[0]))
     else:
         db.commit()
+    finally:
+        cur.close()
 
 
 # def get_moves(db, ist_id):
@@ -37,17 +41,17 @@ def store_msg_building(db, bid, msg):
 def get_msgs_user(db, ist_id):
     # returns user msg log by inverse insertion order
 
-    # TODO: arg with number o msgs to get? None or non-positve gets all
-
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT message FROM message_user WHERE ist_ID = :ist_id \
+        cur.execute("SELECT message FROM message_user WHERE ist_ID = %(ist_id)s \
                     ORDER BY id DESC;", {"ist_id": ist_id})
 
-    except sqlite3.Error as e:
-        print("Error getting user msg log sqlite3 DB: {}".
+    except psycopg2.Error as e:
+        print("Error getting user msg log psycopg2 DB: {}".
               format(e.args[0]))
+    finally:
+        cur.close()
 
     msgs = cur.fetchall()
 
@@ -57,17 +61,17 @@ def get_msgs_user(db, ist_id):
 def get_msgs_building(db, bid):
     # returns building msg log by inverse insertion order
 
-    # TODO: arg with number o msgs to get? None or non-positve gets all
-
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT message FROM message_building WHERE building = :bid \
+        cur.execute("SELECT message FROM message_building WHERE building = %(bid)s \
                     ORDER BY id DESC;", {"bid": bid})
 
-    except sqlite3.Error as e:
-        print("Error getting user msg log sqlite3 DB: {}".
+    except psycopg2.Error as e:
+        print("Error getting user msg log psycopg2 DB: {}".
               format(e.args[0]))
+    finally:
+        cur.close()
 
     msgs = cur.fetchall()
 

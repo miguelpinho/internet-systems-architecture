@@ -1,4 +1,4 @@
-import sqlite3
+import psycopg2
 from random import randint
 
 def add_bot(db, bid):
@@ -10,13 +10,15 @@ def add_bot(db, bid):
 
     try:
         cur.execute("INSERT INTO bot (token, building) \
-                    VALUES (:bot_token, :bid);",
+                    VALUES (%(bot_token)s, %(bid)s);",
                     {"bot_token": bot_token, "bid": bid})
-    except sqlite3.Error as e:
-        print("Error adding bot sqlite3 DB: {}".
+    except psycopg2.Error as e:
+        print("Error adding bot psycopg2 DB: {}".
               format(e.args[0]))
     else:
         db.commit()
+    finally:
+        cur.close()
 
     # TODO: Put in cache?
 
@@ -30,13 +32,15 @@ def delete_bot(db, bot_token):
     #TODO: Remove from cache?
 
     try:
-        cur.execute("DELETE FROM bot WHERE bot.token = :bot_token;",
+        cur.execute("DELETE FROM bot WHERE bot.token = %(bot_token)s;",
                     {"bot_token": bot_token})
-    except sqlite3.Error as e:
-        print("Error removing bot sqlite3 DB: {}".
+    except psycopg2.Error as e:
+        print("Error removing bot psycopg2 DB: {}".
               format(e.args[0]))
     else:
         db.commit()
+    finally:
+        cur.close()
 
 
 def list_bots_by_building(db, bid):
@@ -44,13 +48,15 @@ def list_bots_by_building(db, bid):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT bot.token FROM bot WHERE bot.building = :bid;",
+        cur.execute("SELECT bot.token FROM bot WHERE bot.building = %(bid)s;",
                     {"bid": bid})
-    except sqlite3.Error as e:
-        print("Error searching bots by building sqlite3 DB: {}".
+    except psycopg2.Error as e:
+        print("Error searching bots by building psycopg2 DB: {}".
               format(e.args[0]))
 
         return []
+    finally:
+        cur.close()
 
     bots = cur.fetchall()
     return [b[0] for b in bots]
@@ -62,11 +68,13 @@ def list_bots(db):
 
     try:
         cur.execute("SELECT bot.token FROM bot;")
-    except sqlite3.Error as e:
-        print("Error searching bots by building sqlite3 DB: {}".
+    except psycopg2.Error as e:
+        print("Error searching bots by building psycopg2 DB: {}".
               format(e.args[0]))
 
         return []
+    finally:
+        cur.close()
 
     bots = cur.fetchall()
     return [b[0] for b in bots]
@@ -81,13 +89,15 @@ def where_is_bot(db, bot_token):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT bot.building FROM bot WHERE bot.token = :bot_token;",
+        cur.execute("SELECT bot.building FROM bot WHERE bot.token = %(bot_token)s;",
                     {"bot_token": bot_token})
-    except sqlite3.Error as e:
-        print("Error searching bot sqlite3 DB: {}".
+    except psycopg2.Error as e:
+        print("Error searching bot psycopg2 DB: {}".
               format(e.args[0]))
 
         return []
+    finally:
+        cur.close()
 
     bid = cur.fetchone()
 
@@ -101,8 +111,3 @@ def where_is_bot(db, bot_token):
     return bid
 
 
-def send_msg(db, bot_token, message):
-    # return message of bot
-
-    # FIXME: what should I do?
-    pass

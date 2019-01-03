@@ -1,4 +1,4 @@
-import sqlite3
+import psycopg2
 
 def add_building(db, bid, bname, latitude, longitude, radius):
     # adds building
@@ -6,14 +6,16 @@ def add_building(db, bid, bname, latitude, longitude, radius):
 
     try:
         cur.execute("INSERT INTO building (id, name, latitude, longitude, radius) \
-                    VALUES (:bid, :bname, :lat, :long, :radius);",
+                    VALUES (%(bid)s, %(bname)s, %(lat)s, %(long)s, %(radius)s);",
                     {"bid": bid, "bname": bname, "lat": latitude, "long": longitude,
                     "radius":radius})
-    except sqlite3.Error as e:
-        print("Error adding building sqlite3 DB: {}".
+    except psycopg2.Error as e:
+        print("Error adding building psycopg2 DB: {}".
               format(e.args[0]))
     else:
         db.commit()
+    finally:
+        cur.close()
 
 
 def delete_building(db, bid):
@@ -21,15 +23,17 @@ def delete_building(db, bid):
     cur = db.cursor()
 
     try:
-        cur.execute("DELETE FROM building WHERE building.id = :bid;",
+        cur.execute("DELETE FROM building WHERE building.id = %(bid)s;",
                     {"bid": bid})
-    except sqlite3.Error as e:
-        print("Error removing bot sqlite3 DB: {}".
+    except psycopg2.Error as e:
+        print("Error removing bot psycopg2 DB: {}".
               format(e.args[0]))
 
         return None
     else:
         db.commit()
+    finally:
+        cur.close()
 
     return bid
 
@@ -39,13 +43,15 @@ def show_users(db, bid):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT ist_id FROM ist_user WHERE ist_user.cur_building = :bid;",
+        cur.execute("SELECT ist_id FROM ist_user WHERE ist_user.cur_building = %(bid)s;",
                     {"bid": bid})
-    except sqlite3.Error as e:
-        print("Error getting all users in a building sqlite3 DB: {}".
+    except psycopg2.Error as e:
+        print("Error getting all users in a building psycopg2 DB: {}".
               format(e.args[0]))
 
         return None
+    finally:
+        cur.close()
 
     users = cur.fetchall()
 
@@ -57,13 +63,15 @@ def show_info(db, bid):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT * FROM building WHERE building.id = :bid;",
+        cur.execute("SELECT * FROM building WHERE building.id = %(bid)s;",
                     {"bid": bid})
-    except sqlite3.Error as e:
-        print("Error searching bot sqlite3 DB: {}".
+    except psycopg2.Error as e:
+        print("Error searching bot psycopg2 DB: {}".
               format(e.args[0]))
 
         return []
+    finally:
+        cur.close()
 
     return cur.fetchone()
 
@@ -74,11 +82,13 @@ def show_all_buildings(db):
 
     try:
         cur.execute("SELECT * FROM building;")
-    except sqlite3.Error as e:
-        print("Error searching bot sqlite3 DB: {}".
+    except psycopg2.Error as e:
+        print("Error searching bot psycopg2 DB: {}".
               format(e.args[0]))
 
         return []
+    finally:
+        cur.close()
 
     return cur.fetchall()
 
