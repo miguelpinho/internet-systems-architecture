@@ -7,13 +7,14 @@ from ApiControllers.exceptions import InvalidRequest
 from ApiUtils.db import get_db
 from ApiControllers.Auth.exceptions import NotAuthenticated
 from DbInterface import user
+from msg_queue import get_queue_connection, get_queue_channel, publish_user_message
 
 
 def decorate_user_routes(flask_app: Flask, private_consts):
     """ Decorates The Routes related with the user api (/api/user/)"""
 
     @flask_app.route("/api/user/messages", methods=["POST"])
-    @auth_verification()  # This is the middleware for authentication
+    @auth_verification(private_consts)  # This is the middleware for authentication
     def user_messages():
         """ Handles User Messages - Send messages to the message queues"""
         # Receives uuid on the user from the middleware (not yet implemented, currently receives a "Fake UUID")
@@ -29,7 +30,10 @@ def decorate_user_routes(flask_app: Flask, private_consts):
                 message = request.json["message"]
                 content = {"message": message, "user_id": user_id}
                 radius = request.json["radius"]
-                #  queue.send_user_msg(content, radius)
+                queue_message = jsonify({"radius": radius, "content": content})
+                connection = get_queue_connection(private_consts)
+                channel = get_queue_channel(connection)
+                publish_user_message(channel, queue_message)
             except (IndexError, TypeError):
                 raise InvalidRequest("message not valid")
 
@@ -37,9 +41,8 @@ def decorate_user_routes(flask_app: Flask, private_consts):
             return jsonify({"UserId": user_id, "Message": {"text": message, "time": strftime("%Y-%m-%d %H:%M:%S",
                             gmtime()), "from": user_id}, "Result": "Message Sent"}), 200
 
-
     @flask_app.route("/api/user/location", methods=["POST"])
-    @auth_verification()  # This is the middleware for authentication
+    @auth_verification(private_consts)  # This is the middleware for authentication
     def user_location():
         """ Handles User Location - Inserts user location"""
         # Receives uuid on the user from the middleware (not yet implemented, currently receives a "Fake UUID")
@@ -66,7 +69,7 @@ def decorate_user_routes(flask_app: Flask, private_consts):
         return jsonify({"UserId": user_id, "Result": "Location Set", "Latitude": latitude, "Longitude": longitude}), 200
 
     @flask_app.route("/api/user/building", methods=["GET"])
-    @auth_verification()  # This is the middleware for authentication
+    @auth_verification(private_consts)  # This is the middleware for authentication
     def user_building():
         """ Handles User Building - Gets user location"""
         if 'auth_params' in g:
@@ -85,7 +88,7 @@ def decorate_user_routes(flask_app: Flask, private_consts):
             raise InvalidRequest("User isn't in a building")
 
     @flask_app.route("/api/user/radius", methods=["POST"])
-    @auth_verification()  # This is the middleware for authentication
+    @auth_verification(private_consts)  # This is the middleware for authentication
     def user_radius():
         """ Handles User message radius - Sets user message radius"""
         if 'auth_params' in g:
@@ -109,7 +112,7 @@ def decorate_user_routes(flask_app: Flask, private_consts):
 
 
     @flask_app.route("/api/user/nearby", methods=["GET"])
-    @auth_verification()  # This is the middleware for authentication
+    @auth_verification(private_consts)  # This is the middleware for authentication
     def user_nearby():
         """ Handles User nearby users - Gets nearby users"""
         if 'auth_params' in g:

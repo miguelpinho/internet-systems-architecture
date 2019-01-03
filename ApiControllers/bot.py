@@ -8,7 +8,7 @@ from Utils.consts import AuthType
 
 def decorate_bot_routes(flask_app: Flask, private_consts):
     @flask_app.route("/api/bot", methods=['POST'])
-    @auth_verification(AuthType.AUTH_TYPE_BOT)
+    @auth_verification(private_consts,AuthType.AUTH_TYPE_BOT)
     def bot():
         # Receives Token and Message in POST body
         try:

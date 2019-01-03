@@ -3,7 +3,7 @@ import ApiControllers
 from DbClient.db import close_db, init_db, get_db
 from QueueInterface.exchange import create_exchanges
 from QueueInterface.logs import create_logs_queues
-from consts import configure_private_consts
+from Utils.consts import configure_private_consts
 
 app = Flask(__name__)
 
