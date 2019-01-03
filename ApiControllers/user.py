@@ -9,13 +9,13 @@ from ApiControllers.Auth.exceptions import NotAuthenticated
 from DbInterface import user
 
 
-def decorate_user_routes(flask_app: Flask):
+def decorate_user_routes(flask_app: Flask, private_consts):
     """ Decorates The Routes related with the user api (/api/user/)"""
 
-    @flask_app.route("/api/user/messages", methods=["GET", "POST"])
+    @flask_app.route("/api/user/messages", methods=["POST"])
     @auth_verification()  # This is the middleware for authentication
     def user_messages():
-        """ Handles User Messages - Inserts messages or gets them, based on the http method (POST, GET) """
+        """ Handles User Messages - Send messages to the message queues"""
         # Receives uuid on the user from the middleware (not yet implemented, currently receives a "Fake UUID")
         if 'auth_params' in g:
             user_params = g.auth_params
@@ -27,7 +27,9 @@ def decorate_user_routes(flask_app: Flask):
         if request.method == "POST":  # Handle new message creation
             try:
                 message = request.json["message"]
-                user.send_msg(get_db(), user_params["uuid"], message)
+                content = {"message": message, "user_id": user_id}
+                radius = request.json["radius"]
+                #  queue.send_user_msg(content, radius)
             except (IndexError, TypeError):
                 raise InvalidRequest("message not valid")
 
@@ -35,14 +37,6 @@ def decorate_user_routes(flask_app: Flask):
             return jsonify({"UserId": user_id, "Message": {"text": message, "time": strftime("%Y-%m-%d %H:%M:%S",
                             gmtime()), "from": user_id}, "Result": "Message Sent"}), 200
 
-        else:  # Handle the request for a list of messages (GET)
-            try:
-                message_list = user.get_msgs(get_db(), user_id)
-
-            except Exception:  # TODO: Change this with a explicit exception
-                raise InvalidRequest("message not valid")  # TODO: Set a meaningful Exception and Message
-
-            return jsonify({"UserId": user_id, "Messages": message_list})
 
     @flask_app.route("/api/user/location", methods=["POST"])
     @auth_verification()  # This is the middleware for authentication
@@ -60,7 +54,7 @@ def decorate_user_routes(flask_app: Flask):
             content = request.json
             latitude = content["lat"]
             longitude = content["lon"]
-            user.set_position(get_db(), user_id, latitude, longitude)
+            user.set_position(get_db(private_consts), user_id, latitude, longitude)
 
         except (TypeError, IndexError) as e:
             raise InvalidRequest("Latitude or Longitude not valid: " + str(e))
@@ -82,7 +76,7 @@ def decorate_user_routes(flask_app: Flask):
             # Something wrong could have happen with the middleware, so throw unauthorized error
             raise NotAuthenticated("Please Authenticate First")
         try:
-            building = user.get_user_building(get_db(), user_id)
+            building = user.get_user_building(get_db(private_consts), user_id)
             return jsonify({"UserId": user_id, "Building": building}), 200
         except TypeError as e:
             raise InvalidRequest("Cannot fetch user building correctly: " + str(e))
@@ -103,7 +97,7 @@ def decorate_user_routes(flask_app: Flask):
         try:
             content = request.json
             radius = content["radius"]
-            user.set_radius(get_db(), user_id, radius)
+            #user.set_radius(get_db(private_consts), user_id, radius)
             return jsonify({"UserId": user_id, "Radius": radius}), 200
 
         except (TypeError, IndexError) as e:
@@ -125,7 +119,9 @@ def decorate_user_routes(flask_app: Flask):
             # Something wrong could have happen with the middleware, so throw unauthorized error
             raise NotAuthenticated("Please Authenticate First")
         try:
-            users_list = user.get_close_users(get_db(),user_id)
+            content = request.json
+            radius = content["radius"]
+            users_list = user.get_close_users(get_db(private_consts), user_id, radius)
             if users_list is None:
                 # return msg "No users close by"
                 pass

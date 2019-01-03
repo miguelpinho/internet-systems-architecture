@@ -30,3 +30,7 @@ def configure_consume(channel, queue_callback, queue_id):
 
 def start_message_consumption(channel):
     channel.start_consuming()
+
+
+def create_exchange(channel, exchange_name, exchange_type):
+    channel.exchange_declare(exchange=exchange_name, exchange_type=exchange_type, durable=True)

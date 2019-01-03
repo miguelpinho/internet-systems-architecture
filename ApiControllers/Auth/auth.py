@@ -5,16 +5,16 @@ import uuid
 from Utils.consts import Tokens, FenixApi
 
 
-def decorate_auth_handlers(flask_app: Flask, PrivateConsts):
+def decorate_auth_handlers(flask_app: Flask, private_consts):
     @flask_app.route("/auth/login", methods=["GET", "POST"])
     def auth_login():
         if request.method == "GET":
             # Receives Code from fenix api in the args, uses it to get user info
             code = request.args.get("code")
             # Get info from Fenix API
-            config = fenixedu.FenixEduConfiguration(PrivateConsts.FenixApi.FENIX_API_CLIENT_ID,
+            config = fenixedu.FenixEduConfiguration(private_consts.FenixApi.FENIX_API_CLIENT_ID,
                                                     url_for("auth_login", _external=True),
-                                                    PrivateConsts.FenixApi.FENIX_API_CLIENT_SECRET)
+                                                    private_consts.FenixApi.FENIX_API_CLIENT_SECRET)
             # Get the access token from the response, we choose not to do refreshes - just one time access to get info
             client = fenixedu.FenixEduClient(config)
             user = client.get_user_by_code(code)
@@ -48,7 +48,7 @@ def decorate_auth_handlers(flask_app: Flask, PrivateConsts):
 
     @flask_app.route("/auth/client_id")
     def auth_client_id():
-        client_id = PrivateConsts.FenixApi.FENIX_API_CLIENT_ID
+        client_id = private_consts.FenixApi.FENIX_API_CLIENT_ID
         redirect_url = url_for("auth_login", _external=True)
 
         return jsonify({"client_id": client_id, "redirect_url": redirect_url})

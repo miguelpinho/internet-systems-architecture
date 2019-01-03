@@ -6,7 +6,7 @@ from ApiControllers.exceptions import *
 from Utils.consts import AuthType
 
 
-def decorate_bot_routes(flask_app: Flask):
+def decorate_bot_routes(flask_app: Flask, private_consts):
     @flask_app.route("/api/bot", methods=['POST'])
     @auth_verification(AuthType.AUTH_TYPE_BOT)
     def bot():
@@ -18,7 +18,7 @@ def decorate_bot_routes(flask_app: Flask):
             # g.pop("uuid") gets the bot_token
             # If there is some problem with the request in the bot.send_msg(), throw an exception from inside
             # Any new exceptions should be handled by Flask, so use exceptions.py to insert the exception
-            bots.send_msg(get_db(), g.uuid, message)
+            # bots.send_msg(get_db(private_consts), g.uuid, message)
         except (IndexError, TypeError):
             raise InvalidRequest("token and/or message not valid")
 

@@ -1,8 +1,8 @@
 from flask import g
-from DbClient.db import get_db as get_db_client
+import DbClient
 
 
-def get_db():
+def get_db(private_consts):
     if 'db' not in g:
         #  TODO: g.db = get_db_client()
         g.db = None
