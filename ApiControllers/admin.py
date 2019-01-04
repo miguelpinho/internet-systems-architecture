@@ -59,7 +59,7 @@ def decorate_admin_buildings(flask_app: Flask, private_consts):
             response = {}
             if request.method == "GET":
                 # List of all the buildings (name and id)
-                buildings_list = buildings.show_all_buildinggis(get_db(private_consts))
+                buildings_list = buildings.show_all_buildings(get_db(private_consts))
                 status = 200
                 response.buildings = buildings_list
             else:
