@@ -111,13 +111,10 @@ def list_bots(ip, cookie):  # GET
 
 
 def load_buildings(ip, cookie):  # POST
-    files = {'file': open('buildings.json', 'rb')}
-    headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
-    r = requests.post(ip + '/api/admin/buildings', files=files, cookies=cookie, headers=headers)
-    if r.status_code == 200:
-        print('Succesfully loaded:' + json.dumps(r.json()))
-    else:
-        print('Error:' + r.status_code + ',' + r.json()["message"])
+    with open('buildings.json')as f:
+        data = json.load(f)
+    for building in data:
+        add_building(ip, cookie, building)
 
 
 def delete_bot(ip, cookie, token):  # POST
@@ -145,8 +142,11 @@ def show_all_buildings(ip, cookie):  # GET
 
 
 def add_building(ip, cookie, building_args):  # POST
-    payload = {'id': building_args[0], 'name': building_args[1], 'latitude': building_args[2], 'longitude':
-               building_args[3], 'radius': building_args[4]}
+    if type(building_args) is list:
+        payload = {'id': building_args[0], 'name': building_args[1], 'latitude': building_args[2], 'longitude':
+            building_args[3], 'radius': building_args[4]}
+    else:
+        payload = building_args
     r = requests.post(ip + '/api/admin/buildings', data=payload, cookies=cookie)
     if r.status_code == 200:
         print('Succesfully added:' + json.dumps(r.json()))
