@@ -1,6 +1,4 @@
-import psycopg2
-
-# from Utils.private_consts import DbAccess
+import MySQLdb
 
 def init_db(db):
     qry = open('DbClient/schema.sql', 'r').read()
@@ -9,23 +7,26 @@ def init_db(db):
 
     try:
         cursor.execute(qry)
-    except psycopg2.Error as e:
-        print("Error initializing sqlite3 DB: {}".
-              format(e.args[0]))
-    finally:
-        cursor.close()
+    except MySQLdb.Error as err:
+        print("Error initializing mysql DB: {}".
+              format(err.args[0]))
 
 
-def get_db():
+def get_db(private_consts):
+    db_const = private_consts.DatabaseKeys
+
     try:
-        # db = psycopg2.connect("dbname='{}' user='{}' host='{}' password='{}'".format())
-        db = psycopg2.connect(user = , password = , host = , database = )
-    except:
-        print("Error connecting to DB")
+        db = MySQLdb.connect(user=db_const.MYSQL_DATABASE_USER,
+                             password=db_const.MYSQL_DATABASE_PW,
+                             host=db_const.MYSQL_DATABASE_HOST,
+                             database=db_const.MYSQL_DATABASE_NAME)
+    except MySQLdb.Error as err:
+        print("Error connecting to DB: {}".
+              format(err.args[0]))
         return None
 
     return db
 
+
 def close_db(db):
     db.close()
-

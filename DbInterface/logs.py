@@ -1,4 +1,4 @@
-import psycopg2
+import MySQLdb
 
 # def store_move(db, ist_id, latitude, longitude):
 #     pass
@@ -10,8 +10,8 @@ def store_msg_user(db, ist_id, msg):
     try:
         cur.execute("INSERT INTO message_user (ist_id, message) \
                     VALUES (%(ist_id)s, %(msg)s);", {"ist_id": ist_id, "msg": msg})
-    except psycopg2.Error as e:
-        print("Error adding user msg log psycopg2 DB: {}".
+    except MySQLdb.Error as e:
+        print("Error adding user msg log MySQLdb DB: {}".
               format(e.args[0]))
     else:
         db.commit()
@@ -25,8 +25,8 @@ def store_msg_building(db, bid, msg):
     try:
         cur.execute("INSERT INTO message_building (building, message) \
                     VALUES (%(bid)s, %(msg)s);", {"bid": bid, "msg": msg})
-    except psycopg2.Error as e:
-        print("Error adding building msg log psycopg2 DB: {}".
+    except MySQLdb.Error as e:
+        print("Error adding building msg log MySQLdb DB: {}".
               format(e.args[0]))
     else:
         db.commit()
@@ -47,8 +47,8 @@ def get_msgs_user(db, ist_id):
         cur.execute("SELECT message FROM message_user WHERE ist_ID = %(ist_id)s \
                     ORDER BY id DESC;", {"ist_id": ist_id})
 
-    except psycopg2.Error as e:
-        print("Error getting user msg log psycopg2 DB: {}".
+    except MySQLdb.Error as e:
+        print("Error getting user msg log MySQLdb DB: {}".
               format(e.args[0]))
     finally:
         cur.close()
@@ -67,8 +67,8 @@ def get_msgs_building(db, bid):
         cur.execute("SELECT message FROM message_building WHERE building = %(bid)s \
                     ORDER BY id DESC;", {"bid": bid})
 
-    except psycopg2.Error as e:
-        print("Error getting user msg log psycopg2 DB: {}".
+    except MySQLdb.Error as e:
+        print("Error getting user msg log MySQLdb DB: {}".
               format(e.args[0]))
     finally:
         cur.close()

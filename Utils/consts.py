@@ -78,14 +78,15 @@ class PrivateConsts:
         QUEUE_HOST = "localhost"
         QUEUE_PASSWORD = "None"
         QUEUE_USER = "None"
+
     # Here you can add another classes like FenixApi
     # class MySpecialKeys:
     #   BLABLA_SUPER_SECRET = "SECRET"
     class DatabaseKeys:
-        POSTGRE_DATABASE_NAME = "Put the postgre database name"
-        POSTGRE_DATABASE_USER = "Put the postgre database user"
-        POSTGRE_DATABASE_HOST = "Put the postgre host ip here"
-        POSTGRE_DATABASE_PW = "Put the postgre password"
+        MYSQL_DATABASE_NAME = "Put the postgre database name"
+        MYSQL_DATABASE_USER = "Put the postgre database user"
+        MYSQL_DATABASE_HOST = "Put the postgre host ip here"
+        MYSQL_DATABASE_PW = "Put the postgre password"
 
 
 if __name__ == "__main__":

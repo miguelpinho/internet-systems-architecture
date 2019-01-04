@@ -24,39 +24,39 @@ CREATE TABLE ist_user (
 );
 
 CREATE TABLE bot (
-    /* id INTEGER NOT NULL AUTO_INCREMENT, */
-    id INTEGER PRIMARY KEY,
-    token VARCHAR(20) UNIQUE NOT NULL,
-    building INTEGER
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    token VARCHAR(40) UNIQUE NOT NULL,
+    building INTEGER,
+    PRIMARY KEY (id)
     /* FOREIGN KEY (building) REFERENCES building(id) */
 );
 
 CREATE TABLE message_user (
-    /* id INTEGER NOT NULL AUTO_INCREMENT, */
-    id INTEGER PRIMARY KEY AUTOINCREMENT, /* always a bigger id */
+    id INTEGER NOT NULL AUTO_INCREMENT,
     ist_ID VARCHAR(20),
-    message TEXT
+    message TEXT,
+    PRIMARY KEY (id)
     /* not a good idea impose that user must exist: */
     /* FOREIGN KEY (ist_ID) REFERENCES ist_user(ist_ID) */
 );
 
 CREATE TABLE message_building (
-    /* id INTEGER NOT NULL AUTO_INCREMENT, */
-    id INTEGER PRIMARY KEY AUTOINCREMENT, /* always a bigger id */
+    id INTEGER NOT NULL AUTO_INCREMENT,
     building INTEGER,
     message TEXT,
+    PRIMARY KEY (id),
     FOREIGN KEY (building) REFERENCES building(id)
 );
 
 CREATE TABLE moves_user (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER NOT NULL AUTO_INCREMENT,
     building INTEGER NOT NULL,
-    state VARCHAR(5) NOT NULL
+    state VARCHAR(5) NOT NULL,
+    PRIMARY KEY (id)
 );
 /* TODO: make state enum */
 
 
-/* auto update user building */
 CREATE TRIGGER set_building_ins AFTER INSERT
 ON ist_user
 FOR EACH ROW
@@ -82,4 +82,6 @@ BEGIN
     )
     WHERE ist_ID = NEW.ist_ID;
 END;
+
+/* TODO: make move trigger */
 

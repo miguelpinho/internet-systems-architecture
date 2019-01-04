@@ -3,14 +3,15 @@ import DbInterface.buildings as building
 import DbInterface.bots as bots
 import DbInterface.user as user
 import DbInterface.logs as log
+from Utils.consts import configure_private_consts
 
-db = clientDB.get_db()
+db = clientDB.get_db(configure_private_consts())
 
-clientDB.init_db(db)
+# clientDB.init_db(db)
 
 # TEST: add buildings
-building.add_building(db, 101, "SCDEEC", 100.0, 31.1, 10.0)
-building.add_building(db, 33, "civil", 310.1, 433.9, 13.0)
+building.add_building(db, 101, "asdas", 100.0, 31.1, 10.0)
+building.add_building(db, 33, "civil2", 310.1, 433.9, 13.0)
 
 print(building.show_info(db, 101))
 print(building.show_all_buildings(db))
@@ -62,32 +63,32 @@ print(user.get_close_users(db, "ist131313", 90.0, 41.1, 10.0))
 print(building.show_users(db, 101))
 
 
-# TEST: user message log
-log.store_msg_user(db, "ist431313", "messagem A1")
-log.store_msg_user(db, "ist131313", "messagem B1")
-log.store_msg_user(db, "ist131313", "messagem B2")
-log.store_msg_user(db, "ist431313", "messagem A2")
-log.store_msg_user(db, "ist431313", "messagem A3")
-log.store_msg_user(db, "ist431313", "messagem A4")
-log.store_msg_user(db, "ist431313", "messagem A5")
-log.store_msg_user(db, "ist131313", "messagem B3")
-log.store_msg_user(db, "ist131313", "messagem B4")
+# # TEST: user message log
+# log.store_msg_user(db, "ist431313", "messagem A1")
+# log.store_msg_user(db, "ist131313", "messagem B1")
+# log.store_msg_user(db, "ist131313", "messagem B2")
+# log.store_msg_user(db, "ist431313", "messagem A2")
+# log.store_msg_user(db, "ist431313", "messagem A3")
+# log.store_msg_user(db, "ist431313", "messagem A4")
+# log.store_msg_user(db, "ist431313", "messagem A5")
+# log.store_msg_user(db, "ist131313", "messagem B3")
+# log.store_msg_user(db, "ist131313", "messagem B4")
 
-print(log.get_msgs_user(db, "ist431313"))
-print(log.get_msgs_user(db, "ist131313"))
+# print(log.get_msgs_user(db, "ist431313"))
+# print(log.get_msgs_user(db, "ist131313"))
 
 
-# TEST: building message log
-log.store_msg_building(db, 101, "messagem C1")
-log.store_msg_building(db, 33, "messagem D1")
+# # TEST: building message log
+# log.store_msg_building(db, 101, "messagem C1")
+# log.store_msg_building(db, 33, "messagem D1")
 
-building.add_building(db, 33, "civil", 310.1, 433.9, 13.0)
-log.store_msg_building(db, 101, "messagem C2")
-log.store_msg_building(db, 33, "messagem D2")
-log.store_msg_building(db, 101, "messagem C3")
-log.store_msg_building(db, 33, "messagem D3")
+# building.add_building(db, 33, "civil", 310.1, 433.9, 13.0)
+# log.store_msg_building(db, 101, "messagem C2")
+# log.store_msg_building(db, 33, "messagem D2")
+# log.store_msg_building(db, 101, "messagem C3")
+# log.store_msg_building(db, 33, "messagem D3")
 
-print(log.get_msgs_building(db, 101))
-print(log.get_msgs_building(db, 33))
+# print(log.get_msgs_building(db, 101))
+# print(log.get_msgs_building(db, 33))
 
 

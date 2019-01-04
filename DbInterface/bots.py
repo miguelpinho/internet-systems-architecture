@@ -1,24 +1,22 @@
-import psycopg2
+import MySQLdb
 from random import randint
+import uuid
 
 def add_bot(db, bid):
     # adds bot (creates bot token and puts time of creation in
     # the record and return the token in the end
-    bot_token = randint(0, 10000) # FIXME
+    bot_token = uuid.uuid4().hex
 
     cur = db.cursor()
 
     try:
-        cur.execute("INSERT INTO bot (token, building) \
-                    VALUES (%(bot_token)s, %(bid)s);",
-                    {"bot_token": bot_token, "bid": bid})
-    except psycopg2.Error as e:
-        print("Error adding bot psycopg2 DB: {}".
-              format(e.args[0]))
+        cur.execute("""INSERT INTO bot (token, building) VALUES (%s, %s)""",
+                    (bot_token, bid))
+    except MySQLdb.Error as err:
+        print("Error adding bot MySQLdb DB: {}".
+              format(err))
     else:
         db.commit()
-    finally:
-        cur.close()
 
     # TODO: Put in cache?
 
@@ -32,15 +30,13 @@ def delete_bot(db, bot_token):
     #TODO: Remove from cache?
 
     try:
-        cur.execute("DELETE FROM bot WHERE bot.token = %(bot_token)s;",
-                    {"bot_token": bot_token})
-    except psycopg2.Error as e:
-        print("Error removing bot psycopg2 DB: {}".
-              format(e.args[0]))
+        cur.execute("""DELETE FROM bot WHERE bot.token = %s""",
+                    (bot_token, ))
+    except MySQLdb.Error as err:
+        print("Error removing bot MySQLdb DB: {}".
+              format(err))
     else:
         db.commit()
-    finally:
-        cur.close()
 
 
 def list_bots_by_building(db, bid):
@@ -48,15 +44,13 @@ def list_bots_by_building(db, bid):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT bot.token FROM bot WHERE bot.building = %(bid)s;",
-                    {"bid": bid})
-    except psycopg2.Error as e:
-        print("Error searching bots by building psycopg2 DB: {}".
-              format(e.args[0]))
+        cur.execute("""SELECT bot.token FROM bot WHERE bot.building = %s""",
+                    (bid, ))
+    except MySQLdb.Error as err:
+        print("Error searching bots by building MySQLdb DB: {}".
+              format(err))
 
         return []
-    finally:
-        cur.close()
 
     bots = cur.fetchall()
     return [b[0] for b in bots]
@@ -67,14 +61,12 @@ def list_bots(db):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT bot.token FROM bot;")
-    except psycopg2.Error as e:
-        print("Error searching bots by building psycopg2 DB: {}".
-              format(e.args[0]))
+        cur.execute("""SELECT bot.token FROM bot""")
+    except MySQLdb.Error as err:
+        print("Error searching bots by building MySQLdb DB: {}".
+              format(err))
 
         return []
-    finally:
-        cur.close()
 
     bots = cur.fetchall()
     return [b[0] for b in bots]
@@ -89,15 +81,13 @@ def where_is_bot(db, bot_token):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT bot.building FROM bot WHERE bot.token = %(bot_token)s;",
-                    {"bot_token": bot_token})
-    except psycopg2.Error as e:
-        print("Error searching bot psycopg2 DB: {}".
-              format(e.args[0]))
+        cur.execute("""SELECT bot.building FROM bot WHERE bot.token = %s""",
+                    (bot_token, ))
+    except MySQLdb.Error as err:
+        print("Error searching bot MySQLdb DB: {}".
+              format(err))
 
         return []
-    finally:
-        cur.close()
 
     bid = cur.fetchone()
 

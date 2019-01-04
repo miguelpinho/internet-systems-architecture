@@ -1,21 +1,19 @@
-import psycopg2
+import MySQLdb
 
 def set_position(db, ist_id, latitude, longitude):
     # update position
     cur = db.cursor()
 
     try:
-        cur.execute("INSERT or REPLACE INTO ist_user (ist_ID, latitude, longitude) VALUES (%(ist_id)s, %(lat)s, %(long)s);",
-                    {"ist_id": ist_id, "lat": latitude, "long": longitude})
-    except psycopg2.Error as e:
-        print("Error set user position psycopg2 DB: {}".
-              format(e.args[0]))
+        cur.execute("""INSERT or REPLACE INTO ist_user (ist_ID, latitude, longitude) VALUES (%s, %s, %s)""",
+                    (ist_id, latitude, longitude))
+    except MySQLdb.Error as err:
+        print("Error set user position MySQLdb DB: {}".
+              format(err))
 
         return None
     else:
         db.commit()
-    finally:
-        cur.close()
 
     return (latitude, longitude)
 
@@ -25,20 +23,20 @@ def get_position(db, ist_id):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT latitude, longitude FROM ist_user WHERE ist_user.ist_ID = %(ist_id)s;",
-                    {"ist_id": ist_id})
-    except psycopg2.Error as e:
-        print("Error getting user location psycopg2 DB: {}".
-              format(e.args[0]))
+        cur.execute("""SELECT latitude, longitude FROM ist_user WHERE ist_user.ist_ID = %s""",
+                    (ist_id, ))
+    except MySQLdb.Error as err:
+        print("Error getting user location MySQLdb DB: {}".
+              format(err))
 
         return None
-    finally:
-        cur.close()
 
     res = cur.fetchone()
 
     if res[0] is None or res[1] is None:
         res = None
+    else:
+        res = (float(res[0]), float(res[1]))
 
     return res
 
@@ -48,13 +46,11 @@ def clear_position(db, ist_id):
     cur = db.cursor()
 
     try:
-        cur.execute("UPDATE ist_user SET latitude = null, longitude = null, cur_building = null WHERE ist_user.ist_ID = %(ist_id)s;",
-                    {"ist_id": ist_id})
-    except psycopg2.Error as e:
-        print("Error clearing user location psycopg2 DB: {}".
-              format(e.args[0]))
-    finally:
-        cur.close()
+        cur.execute("UPDATE ist_user SET latitude = null, longitude = null, cur_building = null WHERE ist_user.ist_ID = %s",
+                    (ist_id, ))
+    except MySQLdb.Error as err:
+        print("Error clearing user location MySQLdb DB: {}".
+              format(err))
 
 
 def get_close_users(db, ist_id, radius):
@@ -72,16 +68,13 @@ def get_close_users(db, ist_id, radius):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT ist_id FROM ist_user WHERE latitude >= %(lat_low)s AND latitude <= %(lat_high)s \
-                    AND longitude >= %(long_low)s AND longitude <= %(long_high)s AND ist_id <> %(ist_id)s;",
-                    {"ist_id": ist_id, "lat_low": lat_low, "lat_high":lat_high,
-                    "long_low":long_low, "long_high": long_high})
+        cur.execute("""SELECT ist_id FROM ist_user WHERE latitude >= %s AND latitude <= %s
+                    AND longitude >= %s AND longitude <= %s AND ist_id <> %s""",
+                    (ist_id, lat_low, lat_high, long_low, long_high))
 
-    except psycopg2.Error as e:
-        print("Error getting close users psycopg2 DB: {}".
-              format(e.args[0]))
-    finally:
-        cur.close()
+    except MySQLdb.Error as err:
+        print("Error getting close users MySQLdb DB: {}".
+              format(err))
 
     users = cur.fetchall()
 
@@ -93,15 +86,13 @@ def get_user_building(db, ist_id):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT cur_building FROM ist_user WHERE ist_user.ist_ID = %(ist_id)s;",
-                    {"ist_id": ist_id})
-    except psycopg2.Error as e:
-        print("Error getting user building psycopg2 DB: {}".
-              format(e.args[0]))
+        cur.execute("""SELECT cur_building FROM ist_user WHERE ist_user.ist_ID = %s""",
+                    (ist_id, ))
+    except MySQLdb.Error as err:
+        print("Error getting user building MySQLdb DB: {}".
+              format(err))
 
         return None
-    finally:
-        cur.close()
 
     res = cur.fetchone()
 

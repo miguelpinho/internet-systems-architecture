@@ -1,21 +1,17 @@
-import psycopg2
+import MySQLdb
 
 def add_building(db, bid, bname, latitude, longitude, radius):
     # adds building
     cur = db.cursor()
 
     try:
-        cur.execute("INSERT INTO building (id, name, latitude, longitude, radius) \
-                    VALUES (%(bid)s, %(bname)s, %(lat)s, %(long)s, %(radius)s);",
-                    {"bid": bid, "bname": bname, "lat": latitude, "long": longitude,
-                    "radius":radius})
-    except psycopg2.Error as e:
-        print("Error adding building psycopg2 DB: {}".
-              format(e.args[0]))
+        cur.execute("""INSERT INTO building (id, name, latitude, longitude, radius) VALUES (%s, %s, %s, %s, %s)""",
+                    (bid, bname, latitude, longitude, radius))
+    except MySQLdb.Error as err:
+        print("Error adding building MySQLdb DB: {}".
+              format(err))
     else:
         db.commit()
-    finally:
-        cur.close()
 
 
 def delete_building(db, bid):
@@ -23,17 +19,15 @@ def delete_building(db, bid):
     cur = db.cursor()
 
     try:
-        cur.execute("DELETE FROM building WHERE building.id = %(bid)s;",
-                    {"bid": bid})
-    except psycopg2.Error as e:
-        print("Error removing bot psycopg2 DB: {}".
+        cur.execute("""DELETE FROM building WHERE building.id = %s""",
+                    (bid, ))
+    except MySQLdb.Error as e:
+        print("Error removing bot MySQLdb DB: {}".
               format(e.args[0]))
 
         return None
     else:
         db.commit()
-    finally:
-        cur.close()
 
     return bid
 
@@ -43,15 +37,13 @@ def show_users(db, bid):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT ist_id FROM ist_user WHERE ist_user.cur_building = %(bid)s;",
-                    {"bid": bid})
-    except psycopg2.Error as e:
-        print("Error getting all users in a building psycopg2 DB: {}".
+        cur.execute("""SELECT ist_id FROM ist_user WHERE ist_user.cur_building = %s""",
+                    (bid, ))
+    except MySQLdb.Error as e:
+        print("Error getting all users in a building MySQLdb DB: {}".
               format(e.args[0]))
 
         return None
-    finally:
-        cur.close()
 
     users = cur.fetchall()
 
@@ -63,17 +55,20 @@ def show_info(db, bid):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT * FROM building WHERE building.id = %(bid)s;",
-                    {"bid": bid})
-    except psycopg2.Error as e:
-        print("Error searching bot psycopg2 DB: {}".
+        cur.execute("""SELECT * FROM building WHERE building.id = %s""",
+                    (bid, ))
+    except MySQLdb.Error as e:
+        print("Error searching bot MySQLdb DB: {}".
               format(e.args[0]))
 
         return []
-    finally:
-        cur.close()
 
-    return cur.fetchone()
+    res = cur.fetchone()
+
+    if res is not None:
+        res = res[0:2] + tuple(float(d) for d in res[2:5])
+
+    return res
 
 
 def show_all_buildings(db):
@@ -81,14 +76,16 @@ def show_all_buildings(db):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT * FROM building;")
-    except psycopg2.Error as e:
-        print("Error searching bot psycopg2 DB: {}".
+        cur.execute("""SELECT * FROM building""")
+    except MySQLdb.Error as e:
+        print("Error searching bot MySQLdb DB: {}".
               format(e.args[0]))
 
         return []
-    finally:
-        cur.close()
 
-    return cur.fetchall()
+    res = cur.fetchall()
+
+    res = [(x[0:2] + tuple(float(d) for d in x[2:5])) for x in res]
+
+    return res
 
