@@ -1,37 +1,29 @@
 import MySQLdb
 
-# def store_move(db, ist_id, latitude, longitude):
-#     pass
-
-
 def store_msg_user(db, ist_id, msg):
     cur = db.cursor()
 
     try:
-        cur.execute("INSERT INTO message_user (ist_id, message) \
-                    VALUES (%(ist_id)s, %(msg)s);", {"ist_id": ist_id, "msg": msg})
-    except MySQLdb.Error as e:
+        cur.execute("""INSERT INTO message_user (ist_id, message)
+                    VALUES (%s, %s)""", (ist_id, msg))
+    except MySQLdb.Error as err:
         print("Error adding user msg log MySQLdb DB: {}".
-              format(e.args[0]))
+              format(err))
     else:
         db.commit()
-    finally:
-        cur.close()
 
 
 def store_msg_building(db, bid, msg):
     cur = db.cursor()
 
     try:
-        cur.execute("INSERT INTO message_building (building, message) \
-                    VALUES (%(bid)s, %(msg)s);", {"bid": bid, "msg": msg})
-    except MySQLdb.Error as e:
+        cur.execute("""INSERT INTO message_building (building, message)
+                    VALUES (%s, %s)""", (bid, msg))
+    except MySQLdb.Error as err:
         print("Error adding building msg log MySQLdb DB: {}".
-              format(e.args[0]))
+              format(err))
     else:
         db.commit()
-    finally:
-        cur.close()
 
 
 # def get_moves(db, ist_id):
@@ -44,14 +36,12 @@ def get_msgs_user(db, ist_id):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT message FROM message_user WHERE ist_ID = %(ist_id)s \
-                    ORDER BY id DESC;", {"ist_id": ist_id})
+        cur.execute("""SELECT message FROM message_user
+                    WHERE ist_ID = %s ORDER BY id DESC""", (ist_id, ))
 
-    except MySQLdb.Error as e:
+    except MySQLdb.Error as err:
         print("Error getting user msg log MySQLdb DB: {}".
-              format(e.args[0]))
-    finally:
-        cur.close()
+              format(err))
 
     msgs = cur.fetchall()
 
@@ -64,14 +54,12 @@ def get_msgs_building(db, bid):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT message FROM message_building WHERE building = %(bid)s \
-                    ORDER BY id DESC;", {"bid": bid})
+        cur.execute("""SELECT message FROM message_building
+                    WHERE building = %s ORDER BY id DESC""", (bid, ))
 
-    except MySQLdb.Error as e:
+    except MySQLdb.Error as err:
         print("Error getting user msg log MySQLdb DB: {}".
-              format(e.args[0]))
-    finally:
-        cur.close()
+              format(err))
 
     msgs = cur.fetchall()
 

@@ -1,9 +1,10 @@
 import MySQLdb
 
 def init_db(db):
-    qry = open('DbClient/schema.sql', 'r').read()
-
     cursor = db.cursor()
+
+    for line in open('DbClient/reset.sql'):
+        cursor.execute(line)
 
     try:
         cursor.execute(qry)

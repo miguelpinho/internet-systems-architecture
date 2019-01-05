@@ -18,7 +18,7 @@ print(building.show_all_buildings(db))
 
 
 # TEST: remove building
-building.delete_building(db, 33)
+# building.delete_building(db, 33)
 print(building.show_all_buildings(db))
 
 
@@ -38,7 +38,7 @@ print(bots.list_bots(db))
 
 
 # TEST: set user location and get current building
-user.set_position(db, "ist131313", 100.0, 31.1)
+user.set_position(db, "ist131313", 310.0, 433.1)
 print(user.get_position(db, "ist131313"))
 
 user.clear_position(db, "ist131313")
@@ -53,42 +53,41 @@ print(user.get_user_building(db, "ist131313"))
 user.set_position(db, "ist231313", 90.0, 51.1)
 user.set_position(db, "ist331313", 90.0, 31.0) # This one should not appear
 user.set_position(db, "ist431313", 85.0, 43.1)
-print(user.get_close_users(db, "ist131313", 90.0, 41.1, 10.0))
+print(user.get_close_users(db, "ist131313", 10.0))
 
 user.clear_position(db, "ist431313")
-print(user.get_close_users(db, "ist131313", 90.0, 41.1, 10.0))
+print(user.get_close_users(db, "ist131313", 10.0))
 
 
 # TEST: show all users in a building
 print(building.show_users(db, 101))
 
 
-# # TEST: user message log
-# log.store_msg_user(db, "ist431313", "messagem A1")
-# log.store_msg_user(db, "ist131313", "messagem B1")
-# log.store_msg_user(db, "ist131313", "messagem B2")
-# log.store_msg_user(db, "ist431313", "messagem A2")
-# log.store_msg_user(db, "ist431313", "messagem A3")
-# log.store_msg_user(db, "ist431313", "messagem A4")
-# log.store_msg_user(db, "ist431313", "messagem A5")
-# log.store_msg_user(db, "ist131313", "messagem B3")
-# log.store_msg_user(db, "ist131313", "messagem B4")
+# TEST: user message log
+log.store_msg_user(db, "ist431313", "messagem A1")
+log.store_msg_user(db, "ist131313", "messagem B1")
+log.store_msg_user(db, "ist131313", "messagem B2")
+log.store_msg_user(db, "ist431313", "messagem A2")
+log.store_msg_user(db, "ist431313", "messagem A3")
+log.store_msg_user(db, "ist431313", "messagem A4")
+log.store_msg_user(db, "ist431313", "messagem A5")
+log.store_msg_user(db, "ist131313", "messagem B3")
+log.store_msg_user(db, "ist131313", "messagem B4")
 
-# print(log.get_msgs_user(db, "ist431313"))
-# print(log.get_msgs_user(db, "ist131313"))
+print(log.get_msgs_user(db, "ist431313"))
+print(log.get_msgs_user(db, "ist131313"))
 
 
-# # TEST: building message log
-# log.store_msg_building(db, 101, "messagem C1")
-# log.store_msg_building(db, 33, "messagem D1")
+# TEST: building message log
+log.store_msg_building(db, 101, "messagem C1")
+log.store_msg_building(db, 33, "messagem D1")
 
-# building.add_building(db, 33, "civil", 310.1, 433.9, 13.0)
-# log.store_msg_building(db, 101, "messagem C2")
-# log.store_msg_building(db, 33, "messagem D2")
-# log.store_msg_building(db, 101, "messagem C3")
-# log.store_msg_building(db, 33, "messagem D3")
+log.store_msg_building(db, 101, "messagem C2")
+log.store_msg_building(db, 33, "messagem D2")
+log.store_msg_building(db, 101, "messagem C3")
+log.store_msg_building(db, 33, "messagem D3")
 
-# print(log.get_msgs_building(db, 101))
-# print(log.get_msgs_building(db, 33))
+print(log.get_msgs_building(db, 101))
+print(log.get_msgs_building(db, 33))
 
 

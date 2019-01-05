@@ -5,8 +5,8 @@ def set_position(db, ist_id, latitude, longitude):
     cur = db.cursor()
 
     try:
-        cur.execute("""INSERT or REPLACE INTO ist_user (ist_ID, latitude, longitude) VALUES (%s, %s, %s)""",
-                    (ist_id, latitude, longitude))
+        cur.execute("""INSERT INTO ist_user (ist_ID, latitude, longitude) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE latitude = %s, longitude = %s""",
+                    (ist_id, latitude, longitude, latitude, longitude))
     except MySQLdb.Error as err:
         print("Error set user position MySQLdb DB: {}".
               format(err))
@@ -46,7 +46,8 @@ def clear_position(db, ist_id):
     cur = db.cursor()
 
     try:
-        cur.execute("UPDATE ist_user SET latitude = null, longitude = null, cur_building = null WHERE ist_user.ist_ID = %s",
+        cur.execute("""UPDATE ist_user SET latitude = NULL, longitude = NULL, cur_building = NULL
+                    WHERE ist_user.ist_ID = %s""",
                     (ist_id, ))
     except MySQLdb.Error as err:
         print("Error clearing user location MySQLdb DB: {}".
@@ -57,7 +58,7 @@ def get_close_users(db, ist_id, radius):
     # return [users] of close users
     pos = get_position(db, ist_id)
 
-    if pos in None:
+    if pos is None:
         return None
 
     (latitude, longitude) = pos
@@ -70,7 +71,7 @@ def get_close_users(db, ist_id, radius):
     try:
         cur.execute("""SELECT ist_id FROM ist_user WHERE latitude >= %s AND latitude <= %s
                     AND longitude >= %s AND longitude <= %s AND ist_id <> %s""",
-                    (ist_id, lat_low, lat_high, long_low, long_high))
+                    (lat_low, lat_high, long_low, long_high, ist_id))
 
     except MySQLdb.Error as err:
         print("Error getting close users MySQLdb DB: {}".

@@ -19,8 +19,7 @@ CREATE TABLE ist_user (
     latitude NUMERIC(6, 3),
     longitude NUMERIC(6, 3),
     cur_building INTEGER,
-    PRIMARY KEY (ist_ID),
-    FOREIGN KEY (cur_building) REFERENCES building(id)
+    PRIMARY KEY (ist_ID)
 );
 
 CREATE TABLE bot (
@@ -28,7 +27,6 @@ CREATE TABLE bot (
     token VARCHAR(40) UNIQUE NOT NULL,
     building INTEGER,
     PRIMARY KEY (id)
-    /* FOREIGN KEY (building) REFERENCES building(id) */
 );
 
 CREATE TABLE message_user (
@@ -36,52 +34,83 @@ CREATE TABLE message_user (
     ist_ID VARCHAR(20),
     message TEXT,
     PRIMARY KEY (id)
-    /* not a good idea impose that user must exist: */
-    /* FOREIGN KEY (ist_ID) REFERENCES ist_user(ist_ID) */
 );
 
 CREATE TABLE message_building (
     id INTEGER NOT NULL AUTO_INCREMENT,
     building INTEGER,
     message TEXT,
-    PRIMARY KEY (id),
-    FOREIGN KEY (building) REFERENCES building(id)
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE moves_user (
     id INTEGER NOT NULL AUTO_INCREMENT,
+    ist_ID VARCHAR(20) NOT NULL,
     building INTEGER NOT NULL,
-    state VARCHAR(5) NOT NULL,
+    state ENUM('in', 'out'),
     PRIMARY KEY (id)
 );
-/* TODO: make state enum */
 
 
-CREATE TRIGGER set_building_ins AFTER INSERT
-ON ist_user
-FOR EACH ROW
+delimiter $$
+
+CREATE TRIGGER set_building_ins
+BEFORE INSERT
+    ON ist_user FOR EACH ROW
 BEGIN
-    UPDATE ist_user SET cur_building =
-    (
-        SELECT MIN(B.id) FROM building AS B
-        WHERE ABS(B.latitude - NEW.latitude) <= B.radius
-        AND ABS(B.longitude - NEW.longitude) <= B.radius
-    )
-    WHERE ist_ID = NEW.ist_ID;
-END;
+    IF NEW.latitude IS NULL OR NEW.longitude IS NULL THEN
+        SET NEW.cur_building = NULL;
+    ELSE
+        SET NEW.cur_building =
+        (
+            SELECT MIN(B.id)
+            FROM building AS B
+            WHERE ABS(B.latitude - NEW.latitude) <= B.radius
+            AND ABS(B.longitude - NEW.longitude) <= B.radius
+        );
+    END IF;
+END; $$
 
-CREATE TRIGGER set_building_upd AFTER UPDATE OF latitude, longitude
-ON ist_user
-FOR EACH ROW
+CREATE TRIGGER move_ins
+AFTER INSERT
+    ON ist_user FOR EACH ROW
 BEGIN
-    UPDATE ist_user SET cur_building =
-    (
-        SELECT MIN(B.id) FROM building AS B
-        WHERE ABS(B.latitude - NEW.latitude) <= B.radius
-        AND ABS(B.longitude - NEW.longitude) <= B.radius
-    )
-    WHERE ist_ID = NEW.ist_ID;
-END;
+    IF NEW.cur_building IS NOT NULL THEN
+        INSERT INTO moves_user (ist_ID, building, state) VALUES (NEW.ist_ID, NEW.cur_building, 'in');
+    END IF;
+END; $$
 
-/* TODO: make move trigger */
+CREATE TRIGGER upd_building_ins
+BEFORE UPDATE
+    ON ist_user FOR EACH ROW
+BEGIN
+    IF NEW.latitude IS NULL OR NEW.longitude IS NULL THEN
+        SET NEW.cur_building = NULL;
+    ELSE
+        SET NEW.cur_building =
+        (
+            SELECT MIN(B.id)
+            FROM building AS B
+            WHERE ABS(B.latitude - NEW.latitude) <= B.radius
+            AND ABS(B.longitude - NEW.longitude) <= B.radius
+        );
+    END IF;
+END; $$
 
+CREATE TRIGGER move_upd
+AFTER UPDATE
+    ON ist_user FOR EACH ROW
+BEGIN
+    IF NEW.cur_building IS NULL AND OLD.cur_building IS NOT NULL THEN
+        INSERT INTO moves_user (ist_ID, building, state) VALUES (OLD.ist_ID, OLD.cur_building, 'out');
+    ELSEIF NEW.cur_building IS NOT NULL AND OLD.cur_building IS NULL THEN
+        INSERT INTO moves_user (ist_ID, building, state) VALUES (NEW.ist_ID, NEW.cur_building, 'in');
+    ELSEIF NEW.cur_building IS NOT NULL AND OLD.cur_building IS NOT NULL AND NEW.cur_building <> OLD.cur_building THEN
+        BEGIN
+            INSERT INTO moves_user (ist_ID, building, state) VALUES (NEW.ist_ID, NEW.cur_building, 'in');
+            INSERT INTO moves_user (ist_ID, building, state) VALUES (NEW.ist_ID, OLD.cur_building, 'out');
+        END;
+    END IF;
+END; $$
+
+delimiter ;
