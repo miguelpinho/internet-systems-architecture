@@ -1,12 +1,12 @@
 import pika
-from flask import g
+from flask import g, current_app
 from QueueInterface import message_queues as queue_adapter
 from Utils.consts import Queues
 
 
-def get_queue_connection(private_consts):
+def get_queue_connection():
     if 'q_connection' not in g:
-        g.q_connection = queue_adapter.connect(private_consts)
+        g.q_connection = queue_adapter.connect(current_app.private_consts.Queues.QUEUE_HOST)
     return g.q_connection
 
 

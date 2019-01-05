@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import g, redirect, request, url_for
+from flask import g, redirect, request, url_for, current_app
 
 from ApiControllers.Auth.exceptions import NotAuthenticated
 from Utils.consts import AuthType
@@ -7,12 +7,12 @@ from db import get_db
 from DbInterface.user import get_userid_from_cookie
 
 
-def auth_verification(private_consts, auth_type=AuthType.AUTH_TYPE_USER):
+def auth_verification(auth_type=AuthType.AUTH_TYPE_USER):
     def decorator_auth_verification(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             # Fetch db from g object
-            db = get_db(private_consts)
+            db = get_db()
 
             if auth_type == AuthType.AUTH_TYPE_USER:
                 cookie = request.cookies.get("x-auth")
