@@ -59,7 +59,7 @@ def get_close_users(db, ist_id, radius):
     pos = get_position(db, ist_id)
 
     if pos is None:
-        return None
+        return []
 
     (latitude, longitude) = pos
 
@@ -76,6 +76,7 @@ def get_close_users(db, ist_id, radius):
     except MySQLdb.Error as err:
         print("Error getting close users MySQLdb DB: {}".
               format(err))
+        return []
 
     users = cur.fetchall()
 

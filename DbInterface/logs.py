@@ -26,18 +26,32 @@ def store_msg_building(db, bid, msg):
         db.commit()
 
 
-# def get_moves(db, ist_id):
-#     pass
+def get_moves(db, ist_id):
+    # returns user moves by insertion order
+
+    cur = db.cursor()
+
+    try:
+        cur.execute("""SELECT building, state FROM moves_user
+                    WHERE ist_ID = %s ORDER BY id""", (ist_id, ))
+
+    except MySQLdb.Error as err:
+        print("Error getting user move log MySQLdb DB: {}".
+              format(err))
+
+    moves = cur.fetchall()
+
+    return list(moves)
 
 
 def get_msgs_user(db, ist_id):
-    # returns user msg log by inverse insertion order
+    # returns user msg log by insertion order
 
     cur = db.cursor()
 
     try:
         cur.execute("""SELECT message FROM message_user
-                    WHERE ist_ID = %s ORDER BY id DESC""", (ist_id, ))
+                    WHERE ist_ID = %s ORDER BY id""", (ist_id, ))
 
     except MySQLdb.Error as err:
         print("Error getting user msg log MySQLdb DB: {}".
@@ -49,13 +63,13 @@ def get_msgs_user(db, ist_id):
 
 
 def get_msgs_building(db, bid):
-    # returns building msg log by inverse insertion order
+    # returns building msg log by insertion order
 
     cur = db.cursor()
 
     try:
         cur.execute("""SELECT message FROM message_building
-                    WHERE building = %s ORDER BY id DESC""", (bid, ))
+                    WHERE building = %s ORDER BY id""", (bid, ))
 
     except MySQLdb.Error as err:
         print("Error getting user msg log MySQLdb DB: {}".

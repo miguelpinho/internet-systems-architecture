@@ -71,7 +71,7 @@ BEGIN
     END IF;
 END; $$
 
-CREATE TRIGGER move_ins
+CREATE TRIGGER log_move_ins
 AFTER INSERT
     ON ist_user FOR EACH ROW
 BEGIN
@@ -80,7 +80,7 @@ BEGIN
     END IF;
 END; $$
 
-CREATE TRIGGER upd_building_ins
+CREATE TRIGGER set_building_upd
 BEFORE UPDATE
     ON ist_user FOR EACH ROW
 BEGIN
@@ -97,7 +97,7 @@ BEGIN
     END IF;
 END; $$
 
-CREATE TRIGGER move_upd
+CREATE TRIGGER log_move_upd
 AFTER UPDATE
     ON ist_user FOR EACH ROW
 BEGIN
@@ -107,8 +107,8 @@ BEGIN
         INSERT INTO moves_user (ist_ID, building, state) VALUES (NEW.ist_ID, NEW.cur_building, 'in');
     ELSEIF NEW.cur_building IS NOT NULL AND OLD.cur_building IS NOT NULL AND NEW.cur_building <> OLD.cur_building THEN
         BEGIN
-            INSERT INTO moves_user (ist_ID, building, state) VALUES (NEW.ist_ID, NEW.cur_building, 'in');
             INSERT INTO moves_user (ist_ID, building, state) VALUES (NEW.ist_ID, OLD.cur_building, 'out');
+            INSERT INTO moves_user (ist_ID, building, state) VALUES (NEW.ist_ID, NEW.cur_building, 'in');
         END;
     END IF;
 END; $$

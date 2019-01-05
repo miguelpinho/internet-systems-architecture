@@ -7,7 +7,7 @@ from Utils.consts import configure_private_consts
 
 db = clientDB.get_db(configure_private_consts())
 
-# clientDB.init_db(db)
+clientDB.init_db(db)
 
 # TEST: add buildings
 building.add_building(db, 101, "asdas", 100.0, 31.1, 10.0)
@@ -58,6 +58,9 @@ print(user.get_close_users(db, "ist131313", 10.0))
 user.clear_position(db, "ist431313")
 print(user.get_close_users(db, "ist131313", 10.0))
 
+user.set_position(db, "ist331313", 310, 433)
+user.clear_position(db, "ist331313")
+user.set_position(db, "ist331313", 10, 10)
 
 # TEST: show all users in a building
 print(building.show_users(db, 101))
@@ -89,5 +92,9 @@ log.store_msg_building(db, 33, "messagem D3")
 
 print(log.get_msgs_building(db, 101))
 print(log.get_msgs_building(db, 33))
+
+
+# TEST: moves user log
+print(log.get_moves(db, "ist331313"));
 
 

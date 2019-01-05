@@ -4,13 +4,13 @@ def init_db(db):
     cursor = db.cursor()
 
     for line in open('DbClient/reset.sql'):
-        cursor.execute(line)
+        try:
+            cursor.execute(line)
+        except MySQLdb.Error as err:
+            print("Error initializing mysql DB: {}".
+                  format(err.args[0]))
 
-    try:
-        cursor.execute(qry)
-    except MySQLdb.Error as err:
-        print("Error initializing mysql DB: {}".
-              format(err.args[0]))
+            return
 
 
 def get_db(private_consts):
