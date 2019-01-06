@@ -2,7 +2,9 @@ import MySQLdb
 from random import randint
 import uuid
 
-def add_bot(db, bid):
+BOT_PREFIX = "bot_"
+
+def add_bot(db, bid, cache=None):
     # adds bot (creates bot token and puts time of creation in
     # the record and return the token in the end
     bot_token = uuid.uuid4().hex
@@ -18,16 +20,19 @@ def add_bot(db, bid):
     else:
         db.commit()
 
-    # TODO: Put in cache?
+    if cache is not None:
+        # FIXME: timeout?
+        cache.set(BOT_PREFIX + bot_token, bid)
 
     return bot_token
 
 
-def delete_bot(db, bot_token):
+def delete_bot(db, bot_token, cache=None):
     # returns deleted bot info (got from database pop)
     cur = db.cursor()
 
-    #TODO: Remove from cache?
+    if cache is not None:
+        cache.delete(BOT_PREFIX + bot_token)
 
     try:
         cur.execute("""DELETE FROM bot WHERE bot.token = %s""",
@@ -72,31 +77,38 @@ def list_bots(db):
     return [b[0] for b in bots]
 
 
-def where_is_bot(db, bot_token):
-    # return [bid or bname] where the bot sends messages
+def where_is_bot(db, bot_token, cache=None):
+    # return [bid] where the bot sends messages
 
-    # TODO: try to get from cache
-
-    # FIXME: this is for bid, but it is easy to change
-    cur = db.cursor()
-
-    try:
-        cur.execute("""SELECT bot.building FROM bot WHERE bot.token = %s""",
-                    (bot_token, ))
-    except MySQLdb.Error as err:
-        print("Error searching bot MySQLdb DB: {}".
-              format(err))
-
-        return []
-
-    bid = cur.fetchone()
+    if cache is not None:
+        bid = cache.get(BOT_PREFIX + bot_token)
+    else:
+        bid = None
 
     if bid is None:
-        pass # TODO: no bot with that token
-    else:
-        bid = bid[0]
+        # bot is not cached, get from DB
 
-    # TODO: add to cache if found
+        cur = db.cursor()
+
+        try:
+            cur.execute("""SELECT bot.building FROM bot WHERE bot.token = %s""",
+                        (bot_token, ))
+        except MySQLdb.Error as err:
+            print("Error searching bot MySQLdb DB: {}".
+                  format(err))
+
+            return []
+
+        bid = cur.fetchone()
+
+        if bid is None:
+            pass # TODO: no bot with that token
+        else:
+            bid = bid[0]
+
+            if cache is not None:
+                # FIXME: timeout?
+                cache.set(BOT_PREFIX + bot_token, bid)
 
     return bid
 
