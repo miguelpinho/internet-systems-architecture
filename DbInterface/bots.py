@@ -21,7 +21,6 @@ def add_bot(db, bid, cache=None):
         db.commit()
 
     if cache is not None:
-        # FIXME: timeout?
         cache.set(Datastore.BOT_PREFIX + bot_token, bid)
 
     return bot_token
@@ -102,12 +101,11 @@ def where_is_bot(db, bot_token, cache=None):
         bid = cur.fetchone()
 
         if bid is None:
-            pass # TODO: no bot with that token
+            return []
         else:
             bid = bid[0]
 
             if cache is not None:
-                # FIXME: timeout?
                 cache.set(Datastore.BOT_PREFIX + bot_token, bid)
 
     return bid

@@ -21,9 +21,6 @@ def decorate_user_routes(flask_app: Flask):
         if 'auth_params' in g:
             user_params = g.auth_params
             user_id = user_params["user_id"]
-        else:
-            # FIXME: Something wrong could have happen with the middleware, so throw unauthorized error
-            raise NotAuthenticated("Please Authenticate First")
 
         if request.method == "POST":  # Handle new message creation
             try:

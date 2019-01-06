@@ -19,6 +19,7 @@ import os
 from flask import current_app
 
 PRIVATE_CONSTS_JSON_FILE_PATH = os.path.join("Utils", "private_consts.json")
+USER_DEBUG = False
 
 
 class AuthType:

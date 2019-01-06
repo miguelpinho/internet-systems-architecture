@@ -11,7 +11,7 @@ def create_logs_queues(private_consts):
 
 
 def queues_creator(private_consts):
-    # Connect to the DB TODO: Pass info for connection
+    # Connect to the DB
     db = get_db(private_consts)
 
     # Connect to the message queue broker
