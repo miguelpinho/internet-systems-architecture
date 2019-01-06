@@ -19,67 +19,98 @@ CREATE TABLE ist_user (
     latitude NUMERIC(6, 3),
     longitude NUMERIC(6, 3),
     cur_building INTEGER,
-    PRIMARY KEY (ist_ID),
-    FOREIGN KEY (cur_building) REFERENCES building(id)
+    PRIMARY KEY (ist_ID)
 );
 
 CREATE TABLE bot (
-    /* id INTEGER NOT NULL AUTO_INCREMENT, */
-    id INTEGER PRIMARY KEY,
-    token VARCHAR(20) UNIQUE NOT NULL,
-    building INTEGER
-    /* FOREIGN KEY (building) REFERENCES building(id) */
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    token VARCHAR(40) UNIQUE NOT NULL,
+    building INTEGER,
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE message_user (
-    /* id INTEGER NOT NULL AUTO_INCREMENT, */
-    id INTEGER PRIMARY KEY AUTOINCREMENT, /* always a bigger id */
+    id INTEGER NOT NULL AUTO_INCREMENT,
     ist_ID VARCHAR(20),
-    message TEXT
-    /* not a good idea impose that user must exist: */
-    /* FOREIGN KEY (ist_ID) REFERENCES ist_user(ist_ID) */
+    message TEXT,
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE message_building (
-    /* id INTEGER NOT NULL AUTO_INCREMENT, */
-    id INTEGER PRIMARY KEY AUTOINCREMENT, /* always a bigger id */
+    id INTEGER NOT NULL AUTO_INCREMENT,
     building INTEGER,
     message TEXT,
-    FOREIGN KEY (building) REFERENCES building(id)
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE moves_user (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    ist_ID VARCHAR(20) NOT NULL,
     building INTEGER NOT NULL,
-    state VARCHAR(5) NOT NULL
+    state ENUM('in', 'out'),
+    PRIMARY KEY (id)
 );
-/* TODO: make state enum */
 
 
-/* auto update user building */
-CREATE TRIGGER set_building_ins AFTER INSERT
-ON ist_user
-FOR EACH ROW
+delimiter $$
+
+CREATE TRIGGER set_building_ins
+BEFORE INSERT
+    ON ist_user FOR EACH ROW
 BEGIN
-    UPDATE ist_user SET cur_building =
-    (
-        SELECT MIN(B.id) FROM building AS B
-        WHERE ABS(B.latitude - NEW.latitude) <= B.radius
-        AND ABS(B.longitude - NEW.longitude) <= B.radius
-    )
-    WHERE ist_ID = NEW.ist_ID;
-END;
+    IF NEW.latitude IS NULL OR NEW.longitude IS NULL THEN
+        SET NEW.cur_building = NULL;
+    ELSE
+        SET NEW.cur_building =
+        (
+            SELECT MIN(B.id)
+            FROM building AS B
+            WHERE ABS(B.latitude - NEW.latitude) <= B.radius
+            AND ABS(B.longitude - NEW.longitude) <= B.radius
+        );
+    END IF;
+END; $$
 
-CREATE TRIGGER set_building_upd AFTER UPDATE OF latitude, longitude
-ON ist_user
-FOR EACH ROW
+CREATE TRIGGER log_move_ins
+AFTER INSERT
+    ON ist_user FOR EACH ROW
 BEGIN
-    UPDATE ist_user SET cur_building =
-    (
-        SELECT MIN(B.id) FROM building AS B
-        WHERE ABS(B.latitude - NEW.latitude) <= B.radius
-        AND ABS(B.longitude - NEW.longitude) <= B.radius
-    )
-    WHERE ist_ID = NEW.ist_ID;
-END;
+    IF NEW.cur_building IS NOT NULL THEN
+        INSERT INTO moves_user (ist_ID, building, state) VALUES (NEW.ist_ID, NEW.cur_building, 'in');
+    END IF;
+END; $$
 
+CREATE TRIGGER set_building_upd
+BEFORE UPDATE
+    ON ist_user FOR EACH ROW
+BEGIN
+    IF NEW.latitude IS NULL OR NEW.longitude IS NULL THEN
+        SET NEW.cur_building = NULL;
+    ELSE
+        SET NEW.cur_building =
+        (
+            SELECT MIN(B.id)
+            FROM building AS B
+            WHERE ABS(B.latitude - NEW.latitude) <= B.radius
+            AND ABS(B.longitude - NEW.longitude) <= B.radius
+        );
+    END IF;
+END; $$
+
+CREATE TRIGGER log_move_upd
+AFTER UPDATE
+    ON ist_user FOR EACH ROW
+BEGIN
+    IF NEW.cur_building IS NULL AND OLD.cur_building IS NOT NULL THEN
+        INSERT INTO moves_user (ist_ID, building, state) VALUES (OLD.ist_ID, OLD.cur_building, 'out');
+    ELSEIF NEW.cur_building IS NOT NULL AND OLD.cur_building IS NULL THEN
+        INSERT INTO moves_user (ist_ID, building, state) VALUES (NEW.ist_ID, NEW.cur_building, 'in');
+    ELSEIF NEW.cur_building IS NOT NULL AND OLD.cur_building IS NOT NULL AND NEW.cur_building <> OLD.cur_building THEN
+        BEGIN
+            INSERT INTO moves_user (ist_ID, building, state) VALUES (NEW.ist_ID, OLD.cur_building, 'out');
+            INSERT INTO moves_user (ist_ID, building, state) VALUES (NEW.ist_ID, NEW.cur_building, 'in');
+        END;
+    END IF;
+END; $$
+
+delimiter ;
