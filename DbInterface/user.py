@@ -122,7 +122,7 @@ def get_user_building(db, ist_id):
     return res
 
 
-def get_userid_from_cookie(cookie):
+def get_userid_from_cookie(db, cookie):
     # get from cache -> get(cookie)
     # return None if nothing found
     pass

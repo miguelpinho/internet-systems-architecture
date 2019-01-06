@@ -1,15 +1,16 @@
 from time import strftime, gmtime
 
-from flask import Flask, request, jsonify, g
+from flask import Flask, request, jsonify, g, current_app
 
 from ApiControllers.Auth import auth_verification
 from ApiControllers.exceptions import InvalidRequest
 from ApiUtils.db import get_db
 from ApiControllers.Auth.exceptions import NotAuthenticated
 from DbInterface import user
+from msg_queue import get_queue_connection, get_queue_channel, publish_user_message
 
 
-def decorate_user_routes(flask_app: Flask, private_consts):
+def decorate_user_routes(flask_app: Flask):
     """ Decorates The Routes related with the user api (/api/user/)"""
 
     @flask_app.route("/api/user/messages", methods=["POST"])
@@ -29,14 +30,16 @@ def decorate_user_routes(flask_app: Flask, private_consts):
                 message = request.json["message"]
                 content = {"message": message, "user_id": user_id}
                 radius = request.json["radius"]
-                #  queue.send_user_msg(content, radius)
+                queue_message = jsonify({"radius": radius, "content": content})
+                connection = get_queue_connection()
+                channel = get_queue_channel(connection)
+                publish_user_message(channel, queue_message)
             except (IndexError, TypeError):
                 raise InvalidRequest("message not valid")
 
             # Handle the request properly
             return jsonify({"UserId": user_id, "Message": {"text": message, "time": strftime("%Y-%m-%d %H:%M:%S",
                             gmtime()), "from": user_id}, "Result": "Message Sent"}), 200
-
 
     @flask_app.route("/api/user/location", methods=["POST"])
     @auth_verification()  # This is the middleware for authentication
@@ -54,7 +57,7 @@ def decorate_user_routes(flask_app: Flask, private_consts):
             content = request.json
             latitude = content["lat"]
             longitude = content["lon"]
-            user.set_position(get_db(private_consts), user_id, latitude, longitude)
+            user.set_position(get_db(), user_id, latitude, longitude)
 
         except (TypeError, IndexError) as e:
             raise InvalidRequest("Latitude or Longitude not valid: " + str(e))
@@ -76,7 +79,7 @@ def decorate_user_routes(flask_app: Flask, private_consts):
             # Something wrong could have happen with the middleware, so throw unauthorized error
             raise NotAuthenticated("Please Authenticate First")
         try:
-            building = user.get_user_building(get_db(private_consts), user_id)
+            building = user.get_user_building(get_db(), user_id)
             return jsonify({"UserId": user_id, "Building": building}), 200
         except TypeError as e:
             raise InvalidRequest("Cannot fetch user building correctly: " + str(e))
@@ -97,7 +100,7 @@ def decorate_user_routes(flask_app: Flask, private_consts):
         try:
             content = request.json
             radius = content["radius"]
-            #user.set_radius(get_db(private_consts), user_id, radius)
+            #user.set_radius(get_db(), user_id, radius)
             return jsonify({"UserId": user_id, "Radius": radius}), 200
 
         except (TypeError, IndexError) as e:
@@ -121,7 +124,7 @@ def decorate_user_routes(flask_app: Flask, private_consts):
         try:
             content = request.json
             radius = content["radius"]
-            users_list = user.get_close_users(get_db(private_consts), user_id, radius)
+            users_list = user.get_close_users(get_db(), user_id, radius)
             if users_list is None:
                 # return msg "No users close by"
                 pass
