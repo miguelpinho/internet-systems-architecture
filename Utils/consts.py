@@ -34,8 +34,15 @@ class FenixApi:
 
 
 class Queues:
+    USER_U2U_PREFIX = "user_user_queue"
+    USER_B2U_PREFIX = "bot_user_queue"
     BOTS_EXCHANGE = "bots_exchange"
     USER_EXCHANGE = "user_exchange"
+
+
+class Datastore:
+    USER_PREFIX = "user_"
+    BOT_PREFIX = "bot_"
 
 
 class Tokens:
@@ -87,6 +94,10 @@ class PrivateConsts:
         MYSQL_DATABASE_USER = "Put the postgre database user"
         MYSQL_DATABASE_HOST = "Put the postgre host ip here"
         MYSQL_DATABASE_PW = "Put the postgre password"
+
+    class AdminKeys:
+        ADMIN_PASSWORD = "admin"
+        ADMIN_USERNAME = "admin"
 
 
 if __name__ == "__main__":

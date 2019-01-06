@@ -4,6 +4,7 @@ from DbInterface import bots
 from ApiControllers.Auth import auth_verification
 from ApiControllers.exceptions import *
 from Utils.consts import AuthType
+from ApiUtils.msg_queue import get_queue_channel, get_queue_connection, publish_bot_message
 
 
 def decorate_bot_routes(flask_app: Flask):
@@ -14,14 +15,14 @@ def decorate_bot_routes(flask_app: Flask):
         try:
             content = request.json
             message = content["message"]
-            # get_db() gets the request db object
-            # g.pop("uuid") gets the bot_token
-            # If there is some problem with the request in the bot.send_msg(), throw an exception from inside
-            # Any new exceptions should be handled by Flask, so use exceptions.py to insert the exception
-            # bots.send_msg(get_db(), g.uuid, message)
+            bot_building = g.auth_params["bot_building"]
+
+            connection = get_queue_connection()
+            channel = get_queue_channel(connection)
+            publish_bot_message(channel, bot_building, message)
+            channel.close()
+            connection.close()
         except (IndexError, TypeError):
             raise InvalidRequest("token and/or message not valid")
 
-        # Handle the request properly
-
-        return jsonify({"Message": message, "Result": "Message Sent"}), 200
+        return jsonify({"Message": message, "Building": bot_building, "Result": "Message Sent"}), 200

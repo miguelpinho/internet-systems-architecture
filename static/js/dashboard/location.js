@@ -1,8 +1,8 @@
 // This file handles things related with location, radius and building
 
 function getLocation() {
+    console.log("Update request for location")
     if (navigator.geolocation) {
-        console.log("Asked for current postition");
         navigator.geolocation.getCurrentPosition(get_location_success, (error) => {
             switch(error.code) {
                 case error.PERMISSION_DENIED:
@@ -19,13 +19,11 @@ function getLocation() {
             }
             location = LOCATION_NO;
             clearInterval(location_timer_code);
-  //          location_error_dialog(error.message);
         });
     } else {
         console.log("Geolocation is not supported by this browser.");
         location = LOCATION_NO;
         clearInterval(location_timer_code);
-//        location_error_dialog("Geolocation is not supported by this browser.");
     }
 }
 
@@ -40,14 +38,18 @@ function get_location_success(position) {
 
 
 function refresh_location() {
-    if(user_location_status !== LOCATION_TRY) getLocation()
+    if(user_location_status !== LOCATION_TRY &&
+        user_location_status !== LOCATION_ERR )
+            getLocation()
 }
 
-function config_location() {
+function config_location(nearby_callback) {
     socket.on("building_change_success",(body)=>{
+        console.log("Location Updated")
         if(body["success"] === "yes"){
-            // TODO: Get Building from response, add it to UI
-            //   jQuery("#people_room").text(roomName);
+            // Configure nearby only after location is set
+            nearby_callback();
+            jQuery("#people_room").text(body["building"]);
             user_location_status = LOCATION_YES;
         }
         else {

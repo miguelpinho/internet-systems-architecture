@@ -1,21 +1,20 @@
 import MySQLdb
+from Utils.consts import Datastore
 
-USER_PREFIX = "user_"
 
 def get_token(cache, token):
     # gets the user_ID associated to a token, if valid
-    return cache.get(USER_PREFIX + token)
+    return cache.get(Datastore.USER_PREFIX + str(token))
 
 
 def set_token(cache, token, user_id):
     # stores a token in association to a user_ID
-    return cache.set(USER_PREFIX + token, user_id, timeout=20*60)
-    #return cache.set(USER_PREFIX + token, user_id, ex=20*60)
+    return cache.set(Datastore.USER_PREFIX + str(token), user_id, timeout=20*60)
 
 
 def delete_token(cache, token):
     # mark a token as invalid
-    cache.delete(USER_PREFIX + token)
+    cache.delete(Datastore.USER_PREFIX + str(token))
 
 
 def set_position(db, ist_id, latitude, longitude):
@@ -51,10 +50,11 @@ def get_position(db, ist_id):
 
     res = cur.fetchone()
 
-    if res[0] is None or res[1] is None:
-        res = None
-    else:
-        res = (float(res[0]), float(res[1]))
+    if res is not None:
+        if res[0] is None or res[1] is None:
+            res = None
+        else:
+            res = (float(res[0]), float(res[1]))
 
     return res
 
@@ -81,8 +81,8 @@ def get_close_users(db, ist_id, radius):
 
     (latitude, longitude) = pos
 
-    (lat_low, lat_high)  = (latitude - radius, latitude + radius)
-    (long_low, long_high)  = (longitude - radius, longitude + radius)
+    (lat_low, lat_high) = (latitude - radius, latitude + radius)
+    (long_low, long_high) = (longitude - radius, longitude + radius)
 
     cur = db.cursor()
 
@@ -120,9 +120,3 @@ def get_user_building(db, ist_id):
         res = res[0]
 
     return res
-
-
-def get_userid_from_cookie(db, cookie):
-    # get from cache -> get(cookie)
-    # return None if nothing found
-    pass

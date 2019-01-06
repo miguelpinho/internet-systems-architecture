@@ -3,48 +3,59 @@ import fenixedu
 from ApiControllers import exceptions
 import uuid
 from Utils.consts import Tokens, FenixApi
+import DbInterface.user as user_datastore
 
 
 def decorate_auth_handlers(flask_app: Flask):
     @flask_app.route("/auth/login", methods=["GET", "POST"])
     def auth_login():
-        if request.method == "GET":
+        if request.method == "GET": # User Login
             # Receives Code from fenix api in the args, uses it to get user info
-            code = request.args.get("code")
+            #code = request.args.get("code")
             # Get info from Fenix API
-            config = fenixedu.FenixEduConfiguration(current_app.private_consts.FenixApi.FENIX_API_CLIENT_ID,
-                                                    url_for("auth_login", _external=True),
-                                                    current_app.private_consts.FenixApi.FENIX_API_CLIENT_SECRET)
+            #config = fenixedu.FenixEduConfiguration(current_app.private_consts.FenixApi.FENIX_API_CLIENT_ID,
+             #                                       url_for("auth_login", _external=True),
+              #                                      current_app.private_consts.FenixApi.FENIX_API_CLIENT_SECRET)
             # Get the access token from the response, we choose not to do refreshes - just one time access to get info
-            client = fenixedu.FenixEduClient(config)
-            user = client.get_user_by_code(code)
-            try:
-                person = client.get_person(user)
-                person_name = person["name"]
-                person_id = person["username"]
-                print(f"Name: {person_name}, id:{person_id}")
-                # TODO: Assert for the user in the database
-            except TypeError as e:
-                raise exceptions.InvalidRequest("Invalid login request, please try again: " + str(e))
-        else:
-            # Receives password and admin name in the POST body
-            # compares it to the credentials
-            pass
+            #client = fenixedu.FenixEduClient(config)
+            #user = client.get_user_by_code(code)
+            #try:
+             #   person = client.get_person(user)
+              #  person_id = person["username"]
+            #except TypeError as e:
+             #   raise exceptions.InvalidRequest("Invalid login request, please try again: " + str(e))
 
-        # Create new token (Unique) - This only occurs in succesful logins
-        token = uuid.uuid4()
-        # TODO: Add token to cache - with the user name and id set in. Use token as cache key for faster access in
-        # each token comparisson
+            person_id = request.args.get("name")
+            # Create new token (Unique) - This only occurs in succesful logins
+            token = uuid.uuid4().hex
+            # Add token to cache - with the user id set in. Use token as cache key for faster access in
+            user_datastore.set_token(current_app.cache, token, person_id)
+            # each token comparisson
 
-        if request.method == "GET":  # Handle web client with redirection and token feeding
             redir = redirect(url_for("dashboard", _external=True))
-            redir.set_cookie("x-auth", token.bytes)  # Give the user a cookie, eases with following requests
+            redir.set_cookie("x-auth", token)  # Give the user a cookie, eases with following requests
+            redir.set_cookie("username", person_id)
             return redir
 
-        # For the admin give only a header, as it is a REST client
-        resp = jsonify({"message": "login succesful"})
-        resp.headers["x-auth"] = token
-        return resp
+        else: # Admin Login
+            # Receives password and admin name in the POST body
+            body = request.json()
+            password = body["password"]
+            username = body["username"]
+            # compares it to the credentials
+            if username == current_app.private_consts.AdminKeys.ADMIN_USERNAME:
+                if password == current_app.private_consts.AdminKeys.ADMIN_PASSWORD:
+                    # Create new token (Unique) - This only occurs in succesful logins
+                    token = uuid.uuid4().hex
+                    # Add token to cache - with the user id set in. Use token as cache key for faster access in
+                    user_datastore.set_token(current_app.cache, token, "ADMIN")
+                    # each token comparisson
+                    # For the admin give only a header, as it is a REST client
+                    resp = jsonify({"message": "login succesful"})
+                    resp.headers["x-auth"] = token
+                    return resp
+
+            raise exceptions.InvalidRequest("Invalid login request, wrong credentials",status_code=401)
 
     @flask_app.route("/auth/client_id")
     def auth_client_id():
