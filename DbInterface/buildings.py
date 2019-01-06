@@ -1,5 +1,6 @@
 import MySQLdb
 
+
 def add_building(db, bid, bname, latitude, longitude, radius):
     # adds building
     cur = db.cursor()

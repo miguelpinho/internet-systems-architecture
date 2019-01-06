@@ -10,8 +10,8 @@ def create_channel(connection):
     return channel
 
 
-def create_queue(channel):
-    result = channel.queue_declare(auto_delete=True)
+def create_queue(channel, queue_id=''):
+    result = channel.queue_declare(auto_delete=True, queue=queue_id)
     return result.method.queue
 
 
