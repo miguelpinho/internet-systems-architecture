@@ -1,12 +1,12 @@
 from functools import wraps
+
 from flask import g, redirect, request, url_for, current_app
 
-import exceptions
-from ApiControllers.Auth.exceptions import NotAuthenticated
-from Utils.consts import AuthType
-from db import get_db
-from DbInterface.user import get_token
 import DbInterface.bots as bot_datastore
+import ApiControllers.Auth.exceptions as exceptions
+from DbInterface.user import get_token
+from Utils.consts import AuthType
+from ApiControllers.ApiUtils.db import get_db
 
 
 def auth_verification(auth_type=AuthType.AUTH_TYPE_USER):

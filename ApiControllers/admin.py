@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify, current_app
 
-from ApiUtils.db import get_db
+from .ApiUtils.db import get_db
 from DbInterface import bots, buildings, logs
-from exceptions import InvalidRequest
+from .exceptions import InvalidRequest
 
 
 def decorate_admin_routes(flask_app: Flask):

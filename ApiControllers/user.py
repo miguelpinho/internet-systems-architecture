@@ -1,13 +1,13 @@
 from time import strftime, gmtime
 
-from flask import Flask, request, jsonify, g, current_app, json
+from flask import Flask, request, jsonify, g, json
 
+import DbInterface.user as user
 from ApiControllers.Auth import auth_verification
-from ApiControllers.exceptions import InvalidRequest
-from ApiUtils.db import get_db
 from ApiControllers.Auth.exceptions import NotAuthenticated
-from DbInterface.user import get_position
-from msg_queue import get_queue_connection, get_queue_channel, publish_user_message
+from ApiControllers.exceptions import InvalidRequest
+from .ApiUtils.db import get_db
+from .ApiUtils.msg_queue import get_queue_connection, get_queue_channel, publish_user_message
 
 
 def decorate_user_routes(flask_app: Flask):
