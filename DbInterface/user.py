@@ -1,15 +1,33 @@
-import sqlite3
+import MySQLdb
+
+USER_PREFIX = "user_"
+
+def get_token(cache, token):
+    # gets the user_ID associated to a token, if valid
+    return cache.get(USER_PREFIX + token)
+
+
+def set_token(cache, token, user_id):
+    # stores a token in association to a user_ID
+    return cache.set(USER_PREFIX + token, user_id, timeout=20*60)
+    #return cache.set(USER_PREFIX + token, user_id, ex=20*60)
+
+
+def delete_token(cache, token):
+    # mark a token as invalid
+    cache.delete(USER_PREFIX + token)
+
 
 def set_position(db, ist_id, latitude, longitude):
     # update position
     cur = db.cursor()
 
     try:
-        cur.execute("INSERT or REPLACE INTO ist_user (ist_ID, latitude, longitude) VALUES (:ist_id, :lat, :long);",
-                    {"ist_id": ist_id, "lat": latitude, "long": longitude})
-    except sqlite3.Error as e:
-        print("Error set user position sqlite3 DB: {}".
-              format(e.args[0]))
+        cur.execute("""INSERT INTO ist_user (ist_ID, latitude, longitude) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE latitude = %s, longitude = %s""",
+                    (ist_id, latitude, longitude, latitude, longitude))
+    except MySQLdb.Error as err:
+        print("Error set user position MySQLdb DB: {}".
+              format(err))
 
         return None
     else:
@@ -23,11 +41,11 @@ def get_position(db, ist_id):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT latitude, longitude FROM ist_user WHERE ist_user.ist_ID = :ist_id;",
-                    {"ist_id": ist_id})
-    except sqlite3.Error as e:
-        print("Error getting user location sqlite3 DB: {}".
-              format(e.args[0]))
+        cur.execute("""SELECT latitude, longitude FROM ist_user WHERE ist_user.ist_ID = %s""",
+                    (ist_id, ))
+    except MySQLdb.Error as err:
+        print("Error getting user location MySQLdb DB: {}".
+              format(err))
 
         return None
 
@@ -35,6 +53,8 @@ def get_position(db, ist_id):
 
     if res[0] is None or res[1] is None:
         res = None
+    else:
+        res = (float(res[0]), float(res[1]))
 
     return res
 
@@ -44,29 +64,37 @@ def clear_position(db, ist_id):
     cur = db.cursor()
 
     try:
-        cur.execute("UPDATE ist_user SET latitude = null, longitude = null, cur_building = null WHERE ist_user.ist_ID = :ist_id;",
-                    {"ist_id": ist_id})
-    except sqlite3.Error as e:
-        print("Error clearing user location sqlite3 DB: {}".
-              format(e.args[0]))
+        cur.execute("""UPDATE ist_user SET latitude = NULL, longitude = NULL, cur_building = NULL
+                    WHERE ist_user.ist_ID = %s""",
+                    (ist_id, ))
+    except MySQLdb.Error as err:
+        print("Error clearing user location MySQLdb DB: {}".
+              format(err))
 
 
-def get_close_users(db, ist_id, latitude, longitude, radius):
+def get_close_users(db, ist_id, radius):
     # return [users] of close users
+    pos = get_position(db, ist_id)
+
+    if pos is None:
+        return []
+
+    (latitude, longitude) = pos
+
     (lat_low, lat_high)  = (latitude - radius, latitude + radius)
     (long_low, long_high)  = (longitude - radius, longitude + radius)
 
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT ist_id FROM ist_user WHERE latitude >= :lat_low AND latitude <= :lat_high \
-                    AND longitude >= :long_low AND longitude <= :long_high AND ist_id <> :ist_id;",
-                    {"ist_id": ist_id, "lat_low": lat_low, "lat_high":lat_high,
-                    "long_low":long_low, "long_high": long_high})
+        cur.execute("""SELECT ist_id FROM ist_user WHERE latitude >= %s AND latitude <= %s
+                    AND longitude >= %s AND longitude <= %s AND ist_id <> %s""",
+                    (lat_low, lat_high, long_low, long_high, ist_id))
 
-    except sqlite3.Error as e:
-        print("Error getting close users sqlite3 DB: {}".
-              format(e.args[0]))
+    except MySQLdb.Error as err:
+        print("Error getting close users MySQLdb DB: {}".
+              format(err))
+        return []
 
     users = cur.fetchall()
 
@@ -78,11 +106,11 @@ def get_user_building(db, ist_id):
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT cur_building FROM ist_user WHERE ist_user.ist_ID = :ist_id;",
-                    {"ist_id": ist_id})
-    except sqlite3.Error as e:
-        print("Error getting user building sqlite3 DB: {}".
-              format(e.args[0]))
+        cur.execute("""SELECT cur_building FROM ist_user WHERE ist_user.ist_ID = %s""",
+                    (ist_id, ))
+    except MySQLdb.Error as err:
+        print("Error getting user building MySQLdb DB: {}".
+              format(err))
 
         return None
 

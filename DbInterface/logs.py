@@ -1,18 +1,14 @@
-import sqlite3
-
-# def store_move(db, ist_id, latitude, longitude):
-#     pass
-
+import MySQLdb
 
 def store_msg_user(db, ist_id, msg):
     cur = db.cursor()
 
     try:
-        cur.execute("INSERT INTO message_user (ist_id, message) \
-                    VALUES (:ist_id, :msg);", {"ist_id": ist_id, "msg": msg})
-    except sqlite3.Error as e:
-        print("Error adding user msg log sqlite3 DB: {}".
-              format(e.args[0]))
+        cur.execute("""INSERT INTO message_user (ist_id, message)
+                    VALUES (%s, %s)""", (ist_id, msg))
+    except MySQLdb.Error as err:
+        print("Error adding user msg log MySQLdb DB: {}".
+              format(err))
     else:
         db.commit()
 
@@ -21,33 +17,45 @@ def store_msg_building(db, bid, msg):
     cur = db.cursor()
 
     try:
-        cur.execute("INSERT INTO message_building (building, message) \
-                    VALUES (:bid, :msg);", {"bid": bid, "msg": msg})
-    except sqlite3.Error as e:
-        print("Error adding building msg log sqlite3 DB: {}".
-              format(e.args[0]))
+        cur.execute("""INSERT INTO message_building (building, message)
+                    VALUES (%s, %s)""", (bid, msg))
+    except MySQLdb.Error as err:
+        print("Error adding building msg log MySQLdb DB: {}".
+              format(err))
     else:
         db.commit()
 
 
-# def get_moves(db, ist_id):
-#     pass
-
-
-def get_msgs_user(db, ist_id):
-    # returns user msg log by inverse insertion order
-
-    # TODO: arg with number o msgs to get? None or non-positve gets all
+def get_moves(db, ist_id):
+    # returns user moves by insertion order
 
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT message FROM message_user WHERE ist_ID = :ist_id \
-                    ORDER BY id DESC;", {"ist_id": ist_id})
+        cur.execute("""SELECT building, state FROM moves_user
+                    WHERE ist_ID = %s ORDER BY id""", (ist_id, ))
 
-    except sqlite3.Error as e:
-        print("Error getting user msg log sqlite3 DB: {}".
-              format(e.args[0]))
+    except MySQLdb.Error as err:
+        print("Error getting user move log MySQLdb DB: {}".
+              format(err))
+
+    moves = cur.fetchall()
+
+    return list(moves)
+
+
+def get_msgs_user(db, ist_id):
+    # returns user msg log by insertion order
+
+    cur = db.cursor()
+
+    try:
+        cur.execute("""SELECT message FROM message_user
+                    WHERE ist_ID = %s ORDER BY id""", (ist_id, ))
+
+    except MySQLdb.Error as err:
+        print("Error getting user msg log MySQLdb DB: {}".
+              format(err))
 
     msgs = cur.fetchall()
 
@@ -55,19 +63,17 @@ def get_msgs_user(db, ist_id):
 
 
 def get_msgs_building(db, bid):
-    # returns building msg log by inverse insertion order
-
-    # TODO: arg with number o msgs to get? None or non-positve gets all
+    # returns building msg log by insertion order
 
     cur = db.cursor()
 
     try:
-        cur.execute("SELECT message FROM message_building WHERE building = :bid \
-                    ORDER BY id DESC;", {"bid": bid})
+        cur.execute("""SELECT message FROM message_building
+                    WHERE building = %s ORDER BY id""", (bid, ))
 
-    except sqlite3.Error as e:
-        print("Error getting user msg log sqlite3 DB: {}".
-              format(e.args[0]))
+    except MySQLdb.Error as err:
+        print("Error getting user msg log MySQLdb DB: {}".
+              format(err))
 
     msgs = cur.fetchall()
 
