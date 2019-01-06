@@ -1,5 +1,23 @@
 import MySQLdb
 
+USER_PREFIX = "user_"
+
+def get_token(cache, token):
+    # gets the user_ID associated to a token, if valid
+    return cache.get(USER_PREFIX + token)
+
+
+def set_token(cache, token, user_id):
+    # stores a token in association to a user_ID
+    return cache.set(USER_PREFIX + token, user_id, timeout=20*60)
+    #return cache.set(USER_PREFIX + token, user_id, ex=20*60)
+
+
+def delete_token(cache, token):
+    # mark a token as invalid
+    cache.delete(USER_PREFIX + token)
+
+
 def set_position(db, ist_id, latitude, longitude):
     # update position
     cur = db.cursor()

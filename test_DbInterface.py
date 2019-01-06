@@ -101,3 +101,9 @@ print(bots.list_bots(db))
 # print(log.get_moves(db, "ist331313"));
 
 
+# TEST: user tokens
+print(user.set_token(cache, "agdajksgdajkshdgasjg", "ist177777"))
+print(user.get_token(cache, "agdajksgdajkshdgasjg"))
+user.delete_token(cache, "agdajksgdajkshdgasjg")
+print(user.get_token(cache, "agdajksgdajkshdgasjg"))
+
