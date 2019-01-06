@@ -1,5 +1,9 @@
 {
 //  Just uncoment this, and change name to private_consts.json to use the file as config
 //  "FENIX_API_CLIENT_ID": "SomeExample",
-//  "FENIX_API_CLIENT_SECRET": "AnotherExample"
+//  "FENIX_API_CLIENT_SECRET": "AnotherExample",
+//  "MYSQL_DATABASE_NAME": "DbName",
+//  "MYSQL_DATABASE_USER": "DbUser",
+//  "MYSQL_DATABASE_HOST": "HostIP",
+//  "MYSQL_DATABASE_PW": "Password"
 }

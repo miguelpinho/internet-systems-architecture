@@ -3,7 +3,7 @@ from Utils.consts import Queues
 
 
 def create_exchanges(private_consts):
-    connection = connect(private_consts)
+    connection = connect(private_consts.Queues.QUEUE_HOST)
     channel = create_channel(connection)
     create_exchange(channel, Queues.BOTS_EXCHANGE, "topic")
     create_exchange(channel, Queues.USER_EXCHANGE, "fanout")

@@ -1,6 +1,6 @@
 import math
 
-from flask import Flask, request, g
+from flask import Flask, request, g, current_app
 from flask_socketio import SocketIO, emit
 
 from DbInterface.user import get_userid_from_cookie, clear_position, set_position, get_user_building, get_position
@@ -13,8 +13,7 @@ from Utils.consts import Queues as configs
 class Sockio:
 
     def __init__(self, private_consts):
-        self.connection = queue.connect(private_consts)
-        self.consts = private_consts
+        self.connection = queue.connect(private_consts.Queues.QUEUE_HOST)
         self.channels_dict = {}
 
     def config_socketio(self, flask_app: Flask):
@@ -50,7 +49,7 @@ class Sockio:
                 # Here filter messages by userid, only emit the ones corresponding to this user
                 # if userlocation ~= messagelocation -> emit the message
                 # Get user location
-                db = get_db(private_consts)
+                db = get_db()
                 position = get_position(db, userid)
                 if position is not None:
                     u_lat = position["lat"]
@@ -86,7 +85,7 @@ class Sockio:
             # Here disconnect the queue based on the request sid, by closing the channel opened in the handshake
             if request.sid in self.channels_dict:
                 self.channels_dict[request.sid]["channel"].close()
-            db = get_db(private_consts)
+            db = get_db()
             # clear_position(db, self.channels_dict[request.sid]["user_id"])
             # Pop from dictionary
             self.channels_dict.pop(request.sid)
@@ -104,7 +103,7 @@ class Sockio:
             channel = self.channels_dict[request.sid]["channel"]
             user = self.channels_dict[request.sid]["user_id"]
             # Store location in db
-            db = get_db(private_consts)
+            db = get_db()
             #  set_position(db, user, json["data"]["lat"], json["data"]["lon"])
             # Query building
             #  building = get_user_building(db, user)

@@ -1,8 +1,8 @@
 import pika
 
 
-def connect(private_consts):
-    return pika.BlockingConnection(pika.connection.URLParameters(private_consts.Queues.QUEUE_HOST))
+def connect(host):
+    return pika.BlockingConnection(pika.connection.URLParameters(host))
 
 
 def create_channel(connection):

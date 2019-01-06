@@ -1,8 +1,10 @@
 from functools import wraps
-from flask import g, redirect, request, url_for
+from flask import g, redirect, request, url_for, current_app
 
 from ApiControllers.Auth.exceptions import NotAuthenticated
 from Utils.consts import AuthType
+from db import get_db
+from DbInterface.user import get_userid_from_cookie
 
 
 def auth_verification(auth_type=AuthType.AUTH_TYPE_USER):
@@ -10,28 +12,31 @@ def auth_verification(auth_type=AuthType.AUTH_TYPE_USER):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             # Fetch db from g object
+            db = get_db()
 
             if auth_type == AuthType.AUTH_TYPE_USER:
-                # Verify user based on token (may be in the header or somewhere), check it in database (get_db())
+                cookie = request.cookies.get("x-auth")
+                user_id = get_userid_from_cookie(db, cookie)
 
-                # If not in db:
-                #    raise unauthorized error:  raise NotAuthenticated
-                # or redirect user to login:    return redirect(url_for('login', next=request.url))
-                pass
+                if user_id is None:
+                    # If not in db redirect user to login
+                    return redirect(url_for('login', next=request.url))
+
+                g.auth_params = {"user_id": user_id}
+                return f(*args, **kwargs)
 
             elif auth_type == AuthType.AUTH_TYPE_ADMIN:
+                # TODO: Check admin token in db
                 # Same as for user, but do not redirect, because admin does not login from a web client
-                pass
+                admin_id = "Some Admin"
+                g.auth_params = {"admin_id": admin_id}
+                return f(*args, **kwargs)
 
             else:  # AUTH_TYPE_BOT
-                # Check bot token in db
-                pass
-
-            # If user/admin/bot is logged in, go get the user uuid in the database, then pass it to the next handler
-            # in g.auth_params.uuid
-            g.auth_params = {"uuid": "Fake UUID"}
-
-            return f(*args, **kwargs)
+                # TODO: Check bot token in db
+                bot_id = "Some bot"
+                g.auth_params = {"bot_id": bot_id}
+                return f(*args, **kwargs)
 
         return decorated_function
 

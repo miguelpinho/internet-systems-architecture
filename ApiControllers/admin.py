@@ -1,29 +1,29 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, current_app
 
 from ApiUtils.db import get_db
 from DbInterface import bots, buildings, logs
 from exceptions import InvalidRequest
 
 
-def decorate_admin_routes(flask_app: Flask, private_consts):
-    decorate_admin_bots(flask_app, private_consts)
-    decorate_admin_buildings(flask_app, private_consts)
-    decorate_admin_logs(flask_app, private_consts)
+def decorate_admin_routes(flask_app: Flask):
+    decorate_admin_bots(flask_app)
+    decorate_admin_buildings(flask_app)
+    decorate_admin_logs(flask_app)
 
 
-def decorate_admin_bots(flask_app: Flask, private_consts):
+def decorate_admin_bots(flask_app: Flask):
     @flask_app.route("/api/admin/bots", methods=["POST", "GET"])
     def admin_bots():
         try:
             response = {}
             if request.method == "GET":
                 # List of all the bots
-                bots_list = bots.list_bots(get_db(private_consts))
+                bots_list = bots.list_bots(get_db())
                 status = 200
                 response.bots = bots_list
             else:
                 # Creates new bot, building is passed in the body
-                bot_token = bots.add_bot(get_db(private_consts), request.json["building"])
+                bot_token = bots.add_bot(get_db(), request.json["building"])
                 status = 200
                 response.token = bot_token
 
@@ -38,12 +38,12 @@ def decorate_admin_bots(flask_app: Flask, private_consts):
             response = {}
             if request.method == "GET":
                 # Return the bot building, and maybe other info
-                building = bots.where_is_bot(get_db(private_consts), token)
+                building = bots.where_is_bot(get_db(), token)
                 response.status = 200
                 response.building = building
             else:
                 # Deletes a bot, bot id (token) is passed in query
-                deleted_bot = bots.delete_bot(get_db(private_consts), token)
+                deleted_bot = bots.delete_bot(get_db(), token)
                 response.status = 200
                 response.bot_info = deleted_bot
             return response
@@ -52,14 +52,14 @@ def decorate_admin_bots(flask_app: Flask, private_consts):
             return InvalidRequest("Could not fulfill the request " + str(e))
 
 
-def decorate_admin_buildings(flask_app: Flask, private_consts):
+def decorate_admin_buildings(flask_app: Flask):
     @flask_app.route("/api/admin/buildings", methods=["POST", "GET"])
     def admin_buildings():
         try:
             response = {}
             if request.method == "GET":
                 # List of all the buildings (name and id)
-                buildings_list = buildings.show_all_buildings(get_db(private_consts))
+                buildings_list = buildings.show_all_buildings(get_db())
                 status = 200
                 response.buildings = buildings_list
             else:
@@ -70,7 +70,7 @@ def decorate_admin_buildings(flask_app: Flask, private_consts):
                 lat = body["latitude"]
                 lon = body["longitude"]
                 rad = body["radius"]
-                new_building = buildings.add_building(get_db(private_consts), bid, bname, lat, lon, rad)
+                new_building = buildings.add_building(get_db(), bid, bname, lat, lon, rad)
                 status = 200
                 response.building = new_building
 
@@ -85,14 +85,14 @@ def decorate_admin_buildings(flask_app: Flask, private_consts):
             response = {}
             if request.method == "GET":
                 # Return the building info, users list and bots list
-                building = buildings.show_info(get_db(private_consts), bid)
+                building = buildings.show_info(get_db(), bid)
                 status = 200
                 response.building = building
             else:
                 # Deletes a building, building id (bid) is passed in query
                 body = request.json
                 bid = body["id"]
-                deleted_bot = bots.delete_bot(get_db(private_consts), bid)
+                deleted_bot = bots.delete_bot(get_db(), bid)
                 status = 200
                 response.bot_info = deleted_bot
 
@@ -102,13 +102,13 @@ def decorate_admin_buildings(flask_app: Flask, private_consts):
             return InvalidRequest("Could not fulfill the request " + str(e))
 
 
-def decorate_admin_logs(flask_app: Flask, private_consts):
+def decorate_admin_logs(flask_app: Flask):
     @flask_app.route("/api/admin/logs/users/<ist_id>/messages", methods=["GET"])
     def admin_logs_messages(ist_id=None):
         # Returns messages for that user
         try:
             response = {}
-            message_log = logs.get_msgs_user(get_db(private_consts), ist_id)
+            message_log = logs.get_msgs_user(get_db(), ist_id)
             status = 200
             response.logs = message_log
             return jsonify(response), status
@@ -120,7 +120,7 @@ def decorate_admin_logs(flask_app: Flask, private_consts):
         # Returns moves for that user
         try:
             response = {}
-            moves_log = logs.get_moves(get_db(private_consts), ist_id)
+            moves_log = logs.get_moves(get_db(), ist_id)
             status = 200
             response.logs = moves_log
             return jsonify(response), status
@@ -132,7 +132,7 @@ def decorate_admin_logs(flask_app: Flask, private_consts):
         # Returns messages in that building
         try:
             response = {}
-            building_log = logs.get_msgs_building(get_db(private_consts), bid)
+            building_log = logs.get_msgs_building(get_db(), bid)
             status = 200
             response.logs(building_log)
             return jsonify(response), status
