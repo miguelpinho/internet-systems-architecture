@@ -10,19 +10,19 @@ db = clientDB.get_db(configure_private_consts())
 
 cache = SimpleCache(default_timeout=50)
 
-clientDB.init_db(db)
+# clientDB.init_db(db)
 
-# # TEST: add buildings
-# building.add_building(db, 101, "asdas", 100.0, 31.1, 10.0)
-# building.add_building(db, 33, "civil2", 310.1, 433.9, 13.0)
+# TEST: add buildings
+building.add_building(db, 101, "asdas", 100.13123319, 31.0000001, 10.0000002)
+building.add_building(db, 33, "civil2", 310.1, 433.9, 13.0)
 
-# print(building.show_info(db, 101))
-# print(building.show_all_buildings(db))
+print(building.show_info(db, 101))
+print(building.show_all_buildings(db))
 
 
-# # TEST: remove building
-# # building.delete_building(db, 33)
-# print(building.show_all_buildings(db))
+# TEST: remove building
+# building.delete_building(db, 33)
+print(building.show_all_buildings(db))
 
 
 # TEST: add bots
@@ -40,30 +40,30 @@ print(btokens)
 print(bots.list_bots(db))
 
 
-# # TEST: set user location and get current building
-# user.set_position(db, "ist131313", 310.0, 433.1)
-# print(user.get_position(db, "ist131313"))
+# TEST: set user location and get current building
+user.set_position(db, "ist131313", 310.0000007, 433.1)
+print(user.get_position(db, "ist131313"))
 
-# user.clear_position(db, "ist131313")
-# print(user.get_position(db, "ist131313"))
-# print(user.get_user_building(db, "ist131313"))
+user.clear_position(db, "ist131313")
+print(user.get_position(db, "ist131313"))
+print(user.get_user_building(db, "ist131313"))
 
-# user.set_position(db, "ist131313", 90.0, 41.1)
-# print(user.get_user_building(db, "ist131313"))
+user.set_position(db, "ist131313", 90.0, 41.1)
+print(user.get_user_building(db, "ist131313"))
 
 
-# # TEST: get close users
-# user.set_position(db, "ist231313", 90.0, 51.1)
-# user.set_position(db, "ist331313", 90.0, 31.0) # This one should not appear
-# user.set_position(db, "ist431313", 85.0, 43.1)
-# print(user.get_close_users(db, "ist131313", 10.0))
+# TEST: get close users
+user.set_position(db, "ist231313", 90.0, 51.1)
+user.set_position(db, "ist331313", 90.0, 31.0) # This one should not appear
+user.set_position(db, "ist431313", 85.0, 43.1)
+print(user.get_close_users(db, "ist131313", 10.0))
 
-# user.clear_position(db, "ist431313")
-# print(user.get_close_users(db, "ist131313", 10.0))
+user.clear_position(db, "ist431313")
+print(user.get_close_users(db, "ist131313", 10.0))
 
-# user.set_position(db, "ist331313", 310, 433)
-# user.clear_position(db, "ist331313")
-# user.set_position(db, "ist331313", 10, 10)
+user.set_position(db, "ist331313", 310, 433)
+user.clear_position(db, "ist331313")
+user.set_position(db, "ist331313", 10, 10)
 
 # # TEST: show all users in a building
 # print(building.show_users(db, 101))
