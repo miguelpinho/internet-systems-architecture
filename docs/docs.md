@@ -73,8 +73,26 @@ and identified by an auth token.
         - 200 OK
     - fails:
 
+### »» /api/admin/buildings/{bid}/users
+
+#### GET
+    - returns:
+        - Users inside a building
+        - 200 OK
+    -fails:
+    
+
 ***
 ***
+## » Admin Api > User
+
+### »» /api/admin/users
+
+#### GET
+    - returns:
+        - logged in users
+        - 200 OK
+    - fails:
 
 ## » Admin Api > Logs
 
