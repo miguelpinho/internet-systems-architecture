@@ -106,8 +106,7 @@ def get_logged_users(db):
     cur = db.cursor()
 
     try:
-        cur.execute("""SELECT ist_id FROM ist_user WHERE latitude IS NOT NULL AND longitude IS NOT NULL""",
-                    (lat_low, lat_high, long_low, long_high, ist_id))
+        cur.execute("""SELECT ist_id FROM ist_user WHERE latitude IS NOT NULL AND longitude IS NOT NULL""")
 
     except MySQLdb.Error as err:
         print("Error getting logged users MySQLdb DB: {}".
