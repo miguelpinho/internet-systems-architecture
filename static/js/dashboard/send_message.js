@@ -3,9 +3,9 @@
 function handle_send_message(e) {
 
   let input_box = $("#send_message_input")[0];
-
   let message = input_box.value;
-
+  let slider = $("#radius_range")[0];
+  let radius = parseInt(slider.value)
   //Clean Input Box
   input_box.value = "";
 
@@ -14,7 +14,7 @@ function handle_send_message(e) {
   $.ajax({
       type: "POST",
       url: POSTMSG_ENDPOINT,
-      data: JSON.stringify({message:message}),
+      data: JSON.stringify({message:message, radius:radius}),
       contentType: "application/json",
       success: (data, status, jqXHR)=>{
           console.log("Message Response received to POSTMSG: "+data);

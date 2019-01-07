@@ -1,8 +1,8 @@
 import MySQLdb
 from random import randint
 import uuid
+from Utils.consts import Datastore
 
-BOT_PREFIX = "bot_"
 
 def add_bot(db, bid, cache=None):
     # adds bot (creates bot token and puts time of creation in
@@ -21,8 +21,7 @@ def add_bot(db, bid, cache=None):
         db.commit()
 
     if cache is not None:
-        # FIXME: timeout?
-        cache.set(BOT_PREFIX + bot_token, bid)
+        cache.set(Datastore.BOT_PREFIX + bot_token, bid)
 
     return bot_token
 
@@ -32,7 +31,7 @@ def delete_bot(db, bot_token, cache=None):
     cur = db.cursor()
 
     if cache is not None:
-        cache.delete(BOT_PREFIX + bot_token)
+        cache.delete(Datastore.BOT_PREFIX + bot_token)
 
     try:
         cur.execute("""DELETE FROM bot WHERE bot.token = %s""",
@@ -81,7 +80,7 @@ def where_is_bot(db, bot_token, cache=None):
     # return [bid] where the bot sends messages
 
     if cache is not None:
-        bid = cache.get(BOT_PREFIX + bot_token)
+        bid = cache.get(Datastore.BOT_PREFIX + bot_token)
     else:
         bid = None
 
@@ -102,13 +101,12 @@ def where_is_bot(db, bot_token, cache=None):
         bid = cur.fetchone()
 
         if bid is None:
-            pass # TODO: no bot with that token
+            return []
         else:
             bid = bid[0]
 
             if cache is not None:
-                # FIXME: timeout?
-                cache.set(BOT_PREFIX + bot_token, bid)
+                cache.set(Datastore.BOT_PREFIX + bot_token, bid)
 
     return bid
 

@@ -17,16 +17,12 @@ def get_queue_channel(connection):
 
 
 def publish_user_message(channel, message):
-    response = channel.exchange_declare(passive=True, exchange=Queues.USER_EXCHANGE)
-    if response == "Declare-Ok":
-        channel.basic_publish(exchange=Queues.USER_EXCHANGE,
-                              routing_key='',
-                              body=message)
+    channel.basic_publish(exchange=Queues.USER_EXCHANGE,
+                          routing_key='',
+                          body=message)
 
 
 def publish_bot_message(channel, bid, message):
-    response = channel.exchange_declare(passive=True, exchange=Queues.BOTS_EXCHANGE)
-    if response == "Declare-Ok":
-        channel.basic_publish(exchange=Queues.BOTS_EXCHANGE,
-                              routing_key=bid,
-                              body=message)
+    channel.basic_publish(exchange=Queues.BOTS_EXCHANGE,
+                          routing_key=bid,
+                          body=message)

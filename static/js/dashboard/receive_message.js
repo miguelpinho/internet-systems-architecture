@@ -27,20 +27,34 @@ function display_message(message) {
     scrollToBottom();
 }
 
-function config_receive_message() {
+function config_receive_message(location_callback, nearby_callback, send_msg_callback) {
     // Socket.io connection
 
     socket.on('connect', () => {
         socket.emit('handshake', {data: getCookie("x-auth")});
     });
 
-    socket.on("user_message", (message) =>{
+    socket.on("handshake_allowed", (message)=> {
+        console.log("handshake success")
+        location_callback(nearby_callback)
+        send_msg_callback()
+    })
+
+    socket.on("user:incoming", (message) =>{
         console.log("Message Received: "+message)
         display_message(message);
     });
 
     socket.on("disconnect", ()=>{
         console.log("Disconnected from the io server");
+        user_location_status = LOCATION_ERR;
+        clearInterval(nearby_interval);
+        clearInterval(location_timer_code);
+        confirm("User not authenticated, please login first!\nYou will be redirected to the home page.");
+        location.href = "/";
     })
 
+    socket.on("error", (e)=>{
+        console.log("Error: " + e["error"]);
+    })
 }

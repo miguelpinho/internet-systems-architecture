@@ -1,5 +1,6 @@
 import MySQLdb
 
+
 def store_msg_user(db, ist_id, msg):
     cur = db.cursor()
 

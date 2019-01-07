@@ -1,12 +1,24 @@
 $(document).ready( () => {
     socket = io.connect('http://' + document.domain + ':' + location.port);
-    config_nearby();
-    config_location();
-    config_send_message();
-    config_receive_message();
+    config_receive_message(config_location, config_nearby, config_send_message);
     token = getCookie("x-auth")
-    console.log(token)
+    console.log("User token: "+token)
+
+    let slider = $("#radius_range")[0];
+    let output = $("#radius")[0];
+    output.innerHTML = `Radius [${slider.value}m]`; // Display the default slider value
+
+    // Update the current slider value (each time you drag the slider handle)
+    slider.oninput = function() {
+      output.innerHTML = `Radius [${this.value}m]`;
+    }
+
+    let username = $("#username")[0];
+    userid = getCookie("username")
+    username.innerHTML = "User: " + userid
 });
+
+
 
 // TODO: Change socket.on to message queue
 // socket.on("newMessage", function (message) {
