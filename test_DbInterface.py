@@ -10,7 +10,7 @@ db = clientDB.get_db(configure_private_consts())
 
 cache = SimpleCache(default_timeout=50)
 
-# clientDB.init_db(db)
+clientDB.init_db(db)
 
 # TEST: add buildings
 building.add_building(db, 101, "asdas", 100.13123319, 31.0000001, 10.0000002)
@@ -65,40 +65,40 @@ user.set_position(db, "ist331313", 310, 433)
 user.clear_position(db, "ist331313")
 user.set_position(db, "ist331313", 10, 10)
 
-# # TEST: show all users in a building
-# print(building.show_users(db, 101))
+# TEST: show all users in a building
+print(building.show_users(db, 101))
 
 
-# # TEST: user message log
-# log.store_msg_user(db, "ist431313", "messagem A1")
-# log.store_msg_user(db, "ist131313", "messagem B1")
-# log.store_msg_user(db, "ist131313", "messagem B2")
-# log.store_msg_user(db, "ist431313", "messagem A2")
-# log.store_msg_user(db, "ist431313", "messagem A3")
-# log.store_msg_user(db, "ist431313", "messagem A4")
-# log.store_msg_user(db, "ist431313", "messagem A5")
-# log.store_msg_user(db, "ist131313", "messagem B3")
-# log.store_msg_user(db, "ist131313", "messagem B4")
+# TEST: user message log
+log.store_msg_user(db, "ist431313", "messagem A1")
+log.store_msg_user(db, "ist131313", "messagem B1")
+log.store_msg_user(db, "ist131313", "messagem B2")
+log.store_msg_user(db, "ist431313", "messagem A2")
+log.store_msg_user(db, "ist431313", "messagem A3")
+log.store_msg_user(db, "ist431313", "messagem A4")
+log.store_msg_user(db, "ist431313", "messagem A5")
+log.store_msg_user(db, "ist131313", "messagem B3")
+log.store_msg_user(db, "ist131313", "messagem B4")
 
-# print(log.get_msgs_user(db, "ist431313"))
-# print(log.get_msgs_user(db, "ist131313"))
-
-
-# # TEST: building message log
-# log.store_msg_building(db, 101, "messagem C1")
-# log.store_msg_building(db, 33, "messagem D1")
-
-# log.store_msg_building(db, 101, "messagem C2")
-# log.store_msg_building(db, 33, "messagem D2")
-# log.store_msg_building(db, 101, "messagem C3")
-# log.store_msg_building(db, 33, "messagem D3")
-
-# print(log.get_msgs_building(db, 101))
-# print(log.get_msgs_building(db, 33))
+print(log.get_msgs_user(db, "ist431313"))
+print(log.get_msgs_user(db, "ist131313"))
 
 
-# # TEST: moves user log
-# print(log.get_moves(db, "ist331313"));
+# TEST: building message log
+log.store_msg_building(db, 101, "messagem C1")
+log.store_msg_building(db, 33, "messagem D1")
+
+log.store_msg_building(db, 101, "messagem C2")
+log.store_msg_building(db, 33, "messagem D2")
+log.store_msg_building(db, 101, "messagem C3")
+log.store_msg_building(db, 33, "messagem D3")
+
+print(log.get_msgs_building(db, 101))
+print(log.get_msgs_building(db, 33))
+
+
+# TEST: moves user log
+print(log.get_moves(db, "ist331313"));
 
 
 # TEST: user tokens

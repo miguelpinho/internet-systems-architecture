@@ -1,4 +1,4 @@
-import MySQLdb
+import pymysql as MySQLdb
 
 def init_db(db):
     cursor = db.cursor()
@@ -20,7 +20,7 @@ def get_db(private_consts):
         db = MySQLdb.connect(user=db_const.MYSQL_DATABASE_USER,
                              password=db_const.MYSQL_DATABASE_PW,
                              host=db_const.MYSQL_DATABASE_HOST,
-                             database=db_const.MYSQL_DATABASE_NAME)
+                             db=db_const.MYSQL_DATABASE_NAME)
     except MySQLdb.Error as err:
         print("Error connecting to DB: {}".
               format(err.args[0]))

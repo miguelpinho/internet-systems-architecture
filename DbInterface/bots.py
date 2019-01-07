@@ -1,4 +1,4 @@
-import MySQLdb
+import pymysql as MySQLdb
 from random import randint
 import uuid
 from Utils.consts import Datastore

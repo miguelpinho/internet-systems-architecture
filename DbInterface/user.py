@@ -1,4 +1,4 @@
-import MySQLdb
+import pymysql as MySQLdb
 from Utils.consts import Datastore
 
 
