@@ -8,16 +8,16 @@ DROP TABLE IF EXISTS building;
 CREATE TABLE building (
     id INTEGER,
     name VARCHAR(100) UNIQUE NOT NULL,
-    latitude NUMERIC(6, 3) NOT NULL,
-    longitude NUMERIC(6, 3) NOT NULL,
-    radius NUMERIC(6, 3) NOT NULL,
+    latitude NUMERIC(12, 8) NOT NULL,
+    longitude NUMERIC(12, 8) NOT NULL,
+    radius NUMERIC(12, 8) NOT NULL,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE ist_user (
     ist_ID VARCHAR(20),
-    latitude NUMERIC(6, 3),
-    longitude NUMERIC(6, 3),
+    latitude NUMERIC(12, 8),
+    longitude NUMERIC(12, 8),
     cur_building INTEGER,
     PRIMARY KEY (ist_ID)
 );

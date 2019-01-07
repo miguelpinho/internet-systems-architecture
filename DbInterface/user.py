@@ -1,4 +1,4 @@
-import MySQLdb
+import pymysql as MySQLdb
 from Utils.consts import Datastore
 
 
@@ -93,6 +93,24 @@ def get_close_users(db, ist_id, radius):
 
     except MySQLdb.Error as err:
         print("Error getting close users MySQLdb DB: {}".
+              format(err))
+        return []
+
+    users = cur.fetchall()
+
+    return  [u[0] for u in users]
+
+
+def get_logged_users(db):
+    # return all logged users
+    cur = db.cursor()
+
+    try:
+        cur.execute("""SELECT ist_id FROM ist_user WHERE latitude IS NOT NULL AND longitude IS NOT NULL""",
+                    (lat_low, lat_high, long_low, long_high, ist_id))
+
+    except MySQLdb.Error as err:
+        print("Error getting logged users MySQLdb DB: {}".
               format(err))
         return []
 
