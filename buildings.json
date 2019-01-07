@@ -1,29 +1,71 @@
 [{
 	"id" : "1",
 	"name" : "Central",
-	"latitude" : "1",
-	"longitude" : "3",
-	"radius" : "20"
+	"latitude" : "38.736662",
+	"longitude" : "-9.139314",
+	"radius" : "0.00047"
 },
 {
 	"id" : "2",
 	"name" : "Civil",
-	"latitude" : "5",
-	"longitude" : "2",
-	"radius" : "20"
+	"latitude" : "38.7376827",
+	"longitude" : "-9.1406064",
+	"radius" : "0.0006"
 },
 {
 	"id" : "3",
 	"name" : "Torre Norte",
-	"latitude" : "2",
-	"longitude" : "6",
-	"radius" : "20"
+	"latitude" : "38.7374898",
+	"longitude" : "-9.1395426",
+	"radius" : "0.0004"
 },
 {
 	"id" : "4",
 	"name" : "Torre Sul",
-	"latitude" : "6",
-	"longitude" : "1",
-	"radius" : "20"
+	"latitude" : "38.736014",
+	"longitude" : "-9.138369",
+	"radius" : "0.000385"
+},
+{
+	"id" : "5",
+	"name" : "Matemática",
+	"latitude" : "38.735602",
+	"longitude" : "-9.139769",
+	"radius" : "0.00019"
+},
+{
+	"id" : "6",
+	"name" : "Complexo Interdisciplinar",
+	"latitude" : "38.736146",
+	"longitude" : "-9.139601",
+	"radius" : "0.0003"
+},
+{
+	"id" : "7",
+	"name" : "Pavilhão de Física",
+	"latitude" : "38.735549",
+	"longitude" : "-9.140222",
+	"radius" : "0.00009"
+},
+{
+	"id" : "8",
+	"name" : "Pavilhão de Informática",
+	"latitude" : "38.737539",
+	"longitude" : "-9.137649",
+	"radius" : "0.0003"
+},
+{
+	"id" : "9",
+	"name" : "Pavilhão AEIST",
+	"latitude" : "38.736302",
+	"longitude" : "-9.137364",
+	"radius" : "0.0004"
+},
+{
+	"id" : "10",
+	"name" : "Pavilhão de Mecânica II",
+	"latitude" : "38.737377",
+	"longitude" : "-9.137001",
+	"radius" : "0.00017"
 }
 ]

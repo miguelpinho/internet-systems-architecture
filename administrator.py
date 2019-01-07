@@ -18,7 +18,7 @@ def main():
     if args.ip:
         ip = args.ip
     else:
-        ip = '127.0.0.1'  # default
+        ip = '127.0.0.1:5000'  # default
 
     username = args.username
     password = args.password
@@ -30,7 +30,7 @@ def main():
 
 def connect_to_server(ip, username, password):
     payload = {'username': username, 'password': password}
-    r = requests.post(ip + '/auth/login', data=payload)
+    r = requests.post('http://'+ip + '/auth/login', json=payload)
     cookie = r.cookies
 
     return cookie
@@ -95,19 +95,19 @@ def menu(ip, cookie):
 
 def add_bot(ip, cookie, bid):  # POST
     payload = {'building': bid}
-    r = requests.post(ip + '/api/admin/bots', data=payload, cookies=cookie)
+    r = requests.post('http://'+ip + '/api/admin/bots', json=payload, cookies=cookie)
     if r.status_code == 200:
         print('Succesfully added:' + json.dumps(r.json()))
     else:
-        print('Error:' + r.status_code + ',' + r.json()["message"])
+        print('Error:' + str(r.status_code) + ',' + r.json()["message"])
 
 
 def list_bots(ip, cookie):  # GET
-    r = requests.get(ip + '/api/admin/bots', cookies=cookie)
+    r = requests.get('http://'+ip + '/api/admin/bots', cookies=cookie)
     if r.status_code == 200:
         print(json.dumps(r.json()))
     else:
-        print('Error:' + r.status_code + ',' + r.json()["message"])
+        print('Error:' + str(r.status_code) + ',' + r.json()["message"])
 
 
 def load_buildings(ip, cookie):  # POST
@@ -118,27 +118,27 @@ def load_buildings(ip, cookie):  # POST
 
 
 def delete_bot(ip, cookie, token):  # POST
-    r = requests.post(ip + '/api/admin/bots/' + token, cookies=cookie)
+    r = requests.post('http://'+ip + '/api/admin/bots/' + token, cookies=cookie)
     if r.status_code == 200:
         print('Succesfully loaded:' + json.dumps(r.json()))
     else:
-        print('Error:' + r.status_code + ',' + r.json()["message"])
+        print('Error:' + str(r.status_code) + ',' + r.json()["message"])
 
 
 def where_is_bot(ip, cookie, token):  # GET
-    r = requests.get(ip + '/api/admin/bots/' + token, cookies=cookie)
+    r = requests.get('http://'+ip + '/api/admin/bots/' + token, cookies=cookie)
     if r.status_code == 200:
         print(json.dumps(r.json()))
     else:
-        print('Error:' + r.status_code + ',' + r.json()["message"])
+        print('Error:' + str(r.status_code) + ',' + r.json()["message"])
 
 
 def show_all_buildings(ip, cookie):  # GET
-    r = requests.get(ip + '/api/admin/buildings', cookies=cookie)
+    r = requests.get('http://'+ip + '/api/admin/buildings', cookies=cookie)
     if r.status_code == 200:
         print(json.dumps(r.json()))
     else:
-        print('Error:' + r.status_code + ',' + r.json()["message"])
+        print('Error:' + str(r.status_code) + ',' + r.json()["message"])
 
 
 def add_building(ip, cookie, building_args):  # POST
@@ -147,51 +147,51 @@ def add_building(ip, cookie, building_args):  # POST
             building_args[3], 'radius': building_args[4]}
     else:
         payload = building_args
-    r = requests.post(ip + '/api/admin/buildings', data=payload, cookies=cookie)
+    r = requests.post('http://'+ip + '/api/admin/buildings', json=payload, cookies=cookie)
     if r.status_code == 200:
         print('Succesfully added:' + json.dumps(r.json()))
     else:
-        print('Error:' + r.status_code + ',' + r.json()["message"])
+        print('Error:' + str(r.status_code) + ',' + r.json()["message"])
 
 
 def show_building(ip, cookie, bid):  # GET
-    r = requests.get(ip + '/api/admin/bots/' + bid, cookies=cookie)
+    r = requests.get('http://'+ip + '/api/admin/bots/' + bid, cookies=cookie)
     if r.status_code == 200:
         print(json.dumps(r.json()))
     else:
-        print('Error:' + r.status_code + ',' + r.json()["message"])
+        print('Error:' + str(r.status_code) + ',' + r.json()["message"])
 
 
 def delete_building(ip, cookie, bid):  # POST
-    r = requests.post(ip + '/api/admin/bots/' + bid, cookies=cookie)
+    r = requests.post('http://'+ip + '/api/admin/bots/' + bid, cookies=cookie)
     if r.status_code == 200:
         print('Succesfully deleted:' + json.dumps(r.json()))
     else:
-        print('Error:' + r.status_code + ',' + r.json()["message"])
+        print('Error:' + str(r.status_code) + ',' + r.json()["message"])
 
 
 def get_log_user(ip, cookie, ist_id):  # GET
-    r = requests.get(ip + '/api/admin/logs/users/' + ist_id + '/messages', cookies=cookie)
+    r = requests.get('http://'+ip + '/api/admin/logs/users/' + ist_id + '/messages', cookies=cookie)
     if r.status_code == 200:
         print(json.dumps(r.json()))
     else:
-        print('Error:' + r.status_code + ',' + r.json()["message"])
+        print('Error:' + str(r.status_code) + ',' + r.json()["message"])
 
 
 def get_moves_user(ip, cookie, ist_id):  # GET
-    r = requests.get(ip + '/api/admin/logs/users/' + ist_id + '/moves', cookies=cookie)
+    r = requests.get('http://'+ip + '/api/admin/logs/users/' + ist_id + '/moves', cookies=cookie)
     if r.status_code == 200:
         print(json.dumps(r.json()))
     else:
-        print('Error:' + r.status_code + ',' + r.json()["message"])
+        print('Error:' + str(r.status_code) + ',' + r.json()["message"])
 
 
 def get_building_log(ip, cookie, bid):  # GET
-    r = requests.get(ip + '/api/admin/logs/users/' + bid, cookies=cookie)
+    r = requests.get('http://'+ip + '/api/admin/logs/users/' + bid, cookies=cookie)
     if r.status_code == 200:
         print(json.dumps(r.json()))
     else:
-        print('Error:' + r.status_code + ',' + r.json()["message"])
+        print('Error:' + str(r.status_code) + ',' + r.json()["message"])
 
 
 if __name__ == "__main__":

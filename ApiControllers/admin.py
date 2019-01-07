@@ -40,17 +40,18 @@ def decorate_admin_bots(flask_app: Flask):
     def admin_bots_id(token=None):
         try:
             response = {}
+            status = 200
             if request.method == "GET":
                 # Return the bot building, and maybe other info
                 building = bots.where_is_bot(get_db(), token, cache=current_app.cache)
-                response.status = 200
+                status = 200
                 response["building"] = building
             else:
                 # Deletes a bot, bot id (token) is passed in query
                 deleted_bot = bots.delete_bot(get_db(), token, cache=current_app.cache)
-                response.status = 200
+                status = 200
                 response["bot_info"] = deleted_bot
-            return response
+            return response, status
 
         except IndexError as e:
             return InvalidRequest("Could not fulfill the request " + str(e))
