@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, g
 import ApiControllers
 from DbClient.db import close_db, init_db, get_db
@@ -55,4 +57,5 @@ def request_teardown(e):
 
 
 if __name__ == '__main__':
-    sio.run(app)
+    port = int(os.environ.get("PORT", 5000))
+    sio.run(app, port=port)
