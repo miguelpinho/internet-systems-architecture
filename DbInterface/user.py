@@ -103,6 +103,23 @@ def get_close_users(db, ist_id, radius):
     return  [u[0] for u in users]
 
 
+def get_logged_users(db):
+    # return all logged users
+    cur = db.cursor()
+
+    try:
+        cur.execute("""SELECT ist_id FROM ist_user WHERE latitude IS NOT NULL AND longitude IS NOT NULL""")
+
+    except MySQLdb.Error as err:
+        print("Error getting logged users MySQLdb DB: {}".
+              format(err))
+        return []
+
+    users = cur.fetchall()
+
+    return  [u[0] for u in users]
+
+
 def get_user_building(db, ist_id):
     # return building where user is if checked in, null otherwise
     cur = db.cursor()

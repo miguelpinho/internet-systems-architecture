@@ -1,4 +1,4 @@
-import MySQLdb
+import pymysql as MySQLdb
 
 
 def store_msg_user(db, ist_id, msg):

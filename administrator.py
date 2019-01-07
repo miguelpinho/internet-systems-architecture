@@ -72,6 +72,11 @@ def options_parsing(selection, ip, cookie):
     elif selection == '12':
         bid = input("Enter the building's ID:")
         get_building_log(ip, cookie, bid)
+    elif selection == '13':
+        bid = input("Enter the building's ID:")
+        show_users_in_building(ip, cookie, bid)
+    elif selection == '14':
+        show_logged_users(ip, cookie)
     elif selection == '0':
         pass
     else:
@@ -81,13 +86,14 @@ def options_parsing(selection, ip, cookie):
 def menu(ip, cookie):
     menu_ = {'1': 'Add Bot', '2': 'Delete Bot', '3': 'List Bots', '4': 'Load Buildings', '5': 'Find Bot',
              '6': 'Show All Buildings', '7': 'Add Building', '8': 'Show Building', '9': 'Delete Building',
-             '10': 'Show User Log', '11': 'Show User Moves', '12': 'Show Building Log', '0': 'Exit'}
+             '10': 'Show User Log', '11': 'Show User Moves', '12': 'Show Building Log','13': 'Show Users in Building',
+             '14' : 'Show Logged Users', '0': 'Exit'}
     print('Welcome Admin\n')
     while True:
         options = menu_.keys()
         for entry in options:
             print(entry, menu_[entry])
-        selection = input("Please select an option")
+        selection = input("Please select an option >> ")
         options_parsing(selection, ip, cookie)
         if selection == '0':
             break
@@ -117,8 +123,24 @@ def load_buildings(ip, cookie):  # POST
         add_building(ip, cookie, building)
 
 
-def delete_bot(ip, cookie, token):  # POST
-    r = requests.post('http://'+ip + '/api/admin/bots/' + token, cookies=cookie)
+def delete_bot(ip, cookie, token):  # DELETE
+    r = requests.delete('http://'+ip + '/api/admin/bots/' + token, cookies=cookie)
+    if r.status_code == 200:
+        print('Succesfully deleted:' + json.dumps(r.json()))
+    else:
+        print('Error:' + str(r.status_code) + ',' + r.json()["message"])
+
+
+def show_users_in_building(ip, cookie, bid):  # GET
+    r = requests.get('http://' + ip + '/api/admin/buildings/' + bid + '/users', cookies=cookie)
+    if r.status_code == 200:
+        print('Succesfully loaded:' + json.dumps(r.json()))
+    else:
+        print('Error:' + str(r.status_code) + ',' + r.json()["message"])
+
+
+def show_logged_users(ip, cookie):  # GET
+    r = requests.get('http://' + ip + '/api/admin/users', cookies=cookie)
     if r.status_code == 200:
         print('Succesfully loaded:' + json.dumps(r.json()))
     else:
@@ -155,15 +177,15 @@ def add_building(ip, cookie, building_args):  # POST
 
 
 def show_building(ip, cookie, bid):  # GET
-    r = requests.get('http://'+ip + '/api/admin/bots/' + bid, cookies=cookie)
+    r = requests.get('http://'+ip + '/api/admin/buildings/' + bid, cookies=cookie)
     if r.status_code == 200:
         print(json.dumps(r.json()))
     else:
         print('Error:' + str(r.status_code) + ',' + r.json()["message"])
 
 
-def delete_building(ip, cookie, bid):  # POST
-    r = requests.post('http://'+ip + '/api/admin/bots/' + bid, cookies=cookie)
+def delete_building(ip, cookie, bid):  # DELETE
+    r = requests.delete('http://'+ip + '/api/admin/buildings/' + bid, cookies=cookie)
     if r.status_code == 200:
         print('Succesfully deleted:' + json.dumps(r.json()))
     else:
@@ -187,7 +209,7 @@ def get_moves_user(ip, cookie, ist_id):  # GET
 
 
 def get_building_log(ip, cookie, bid):  # GET
-    r = requests.get('http://'+ip + '/api/admin/logs/users/' + bid, cookies=cookie)
+    r = requests.get('http://'+ip + '/api/admin/logs/building/' + bid, cookies=cookie)
     if r.status_code == 200:
         print(json.dumps(r.json()))
     else:
