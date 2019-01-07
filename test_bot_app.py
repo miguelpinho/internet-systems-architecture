@@ -13,11 +13,11 @@ def send_message(ip, token):
 
         payload = {'message': message, 'token': token}
 
-        r = requests.post(ip+'/api/bot', data=payload)
+        r = requests.post('https://'+ip+'/api/bot', json=payload)
         if r.status_code == 200:
             print(json.dumps(r.json()))
         else:
-            print('Error:' + r.status_code + ',' + r.json()["message"])
+            print('Error:' + str(r.status_code))
 
         time.sleep(15)
 
