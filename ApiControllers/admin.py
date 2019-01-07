@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify, current_app
 
+from ApiControllers import auth_verification
+from consts import AuthType
 from .ApiUtils.db import get_db
 from DbInterface import bots, buildings, logs
 from .exceptions import InvalidRequest
@@ -13,6 +15,7 @@ def decorate_admin_routes(flask_app: Flask):
 
 def decorate_admin_bots(flask_app: Flask):
     @flask_app.route("/api/admin/bots", methods=["POST", "GET"])
+    @auth_verification(AuthType.AUTH_TYPE_ADMIN)
     def admin_bots():
         try:
             response = {}
@@ -33,6 +36,7 @@ def decorate_admin_bots(flask_app: Flask):
             return InvalidRequest("Could not fulfill the request " + str(e))
 
     @flask_app.route("/api/admin/bots/<token>", methods=["GET", "DELETE"])
+    @auth_verification(AuthType.AUTH_TYPE_ADMIN)
     def admin_bots_id(token=None):
         try:
             response = {}
@@ -54,6 +58,7 @@ def decorate_admin_bots(flask_app: Flask):
 
 def decorate_admin_buildings(flask_app: Flask):
     @flask_app.route("/api/admin/buildings", methods=["POST", "GET"])
+    @auth_verification(AuthType.AUTH_TYPE_ADMIN)
     def admin_buildings():
         try:
             response = {}
@@ -80,6 +85,7 @@ def decorate_admin_buildings(flask_app: Flask):
             return InvalidRequest("Could not fulfill the request " + str(e))
 
     @flask_app.route("/api/admin/bots/<bid>", methods=["GET", "DELETE"])
+    @auth_verification(AuthType.AUTH_TYPE_ADMIN)
     def admin_buildings_id(bid=None):
         try:
             response = {}
@@ -104,6 +110,7 @@ def decorate_admin_buildings(flask_app: Flask):
 
 def decorate_admin_logs(flask_app: Flask):
     @flask_app.route("/api/admin/logs/users/<ist_id>/messages", methods=["GET"])
+    @auth_verification(AuthType.AUTH_TYPE_ADMIN)
     def admin_logs_messages(ist_id=None):
         # Returns messages for that user
         try:
@@ -116,6 +123,7 @@ def decorate_admin_logs(flask_app: Flask):
             return InvalidRequest("Could not fulfill the request " + str(e))
 
     @flask_app.route("/api/admin/logs/users/<ist_id>/moves", methods=["GET"])
+    @auth_verification(AuthType.AUTH_TYPE_ADMIN)
     def admin_logs_moves(ist_id=None):
         # Returns moves for that user
         try:
@@ -128,6 +136,7 @@ def decorate_admin_logs(flask_app: Flask):
             return InvalidRequest("Could not fulfill the request " + str(e))
 
     @flask_app.route("/api/admin/logs/building/<bid>", methods=["GET"])
+    @auth_verification(AuthType.AUTH_TYPE_ADMIN)
     def admin_logs_building(bid=None):
         # Returns messages in that building
         try:

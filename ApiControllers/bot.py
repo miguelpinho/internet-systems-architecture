@@ -12,11 +12,13 @@ def decorate_bot_routes(flask_app: Flask):
         # Receives Token and Message in POST body
         try:
             content = request.json
-            message = content["message"]
+            bot_token = g.auth_params["bot_id"]
             bot_building = g.auth_params["bot_building"]
+            message = {"text": content["message"], "bot_token": bot_token}
 
             connection = get_queue_connection()
             channel = get_queue_channel(connection)
+            # By publishing with bot_building as routing-key, the message is filtered to the correct subscribers
             publish_bot_message(channel, bot_building, message)
             channel.close()
             connection.close()

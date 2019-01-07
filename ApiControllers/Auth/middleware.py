@@ -3,7 +3,7 @@ from functools import wraps
 from flask import g, redirect, request, url_for, current_app
 
 import DbInterface.bots as bot_datastore
-import ApiControllers.Auth.exceptions as exceptions
+import ApiControllers.exceptions as exceptions
 from DbInterface.user import get_token
 from Utils.consts import AuthType
 from ApiControllers.ApiUtils.db import get_db
@@ -29,7 +29,7 @@ def auth_verification(auth_type=AuthType.AUTH_TYPE_USER):
 
             elif auth_type == AuthType.AUTH_TYPE_ADMIN:
                 # Same as for user, but do not redirect, because admin does not login from a web client
-                token = request.headers.get("x-auth", None)
+                token = request.cookies.get("x-auth", None)
                 admin_id = get_token(current_app.cache, token)
 
                 if admin_id is None:

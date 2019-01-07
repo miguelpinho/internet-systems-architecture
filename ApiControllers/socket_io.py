@@ -85,11 +85,14 @@ class Sockio:
             self.channels_dict[request.sid]["bot_queue"] = queue_id
 
             def bot_queue_callback(ch, method, properties, body):
-                print(ch, body, properties, method)
+                data = json_engine.loads(body)
+                message = data["text"]
+                content = {"time": strftime("%Y-%m-%d %H:%M:%S", gmtime()), "from": "Bot", "text": message}
                 # Here messages already are filtered by the exchange
-                emit("bot:incoming", body)
+                sio.emit("bot:incoming", content , room=room_id)
 
             queue.configure_consume(channel, bot_queue_callback, queue_id)
+            # Created in a background thread due to the synchronous behaviour of message queues
             thread = Thread(target=queue.start_message_consumption, args=(channel,))
             thread.start()
             emit("handshake_allowed", {"success": "true", "room": userid})
