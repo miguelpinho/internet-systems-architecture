@@ -1,4 +1,4 @@
-import pymysql as MySQLdb
+import MySQLdb
 
 
 def add_building(db, bid, bname, latitude, longitude, radius):
