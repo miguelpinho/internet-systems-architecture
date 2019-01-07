@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, current_app
 
-from ApiControllers import auth_verification
-from consts import AuthType
+from ApiControllers.Auth.middleware import auth_verification
+from Utils.consts import AuthType
 from .ApiUtils.db import get_db
 from DbInterface import bots, buildings, logs
 from .exceptions import InvalidRequest

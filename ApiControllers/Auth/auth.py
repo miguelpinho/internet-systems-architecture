@@ -47,7 +47,7 @@ def decorate_auth_handlers(flask_app: Flask):
 
         else:  # Admin Login
             # Receives password and admin name in the POST body
-            body = request.json()
+            body = request.json
             password = body["password"]
             username = body["username"]
             # compares it to the credentials
