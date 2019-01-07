@@ -12,17 +12,17 @@ cache = SimpleCache(default_timeout=50)
 
 clientDB.init_db(db)
 
-# # TEST: add buildings
-# building.add_building(db, 101, "asdas", 100.0, 31.1, 10.0)
-# building.add_building(db, 33, "civil2", 310.1, 433.9, 13.0)
+# TEST: add buildings
+building.add_building(db, 101, "asdas", 100.0, 31.1, 10.0)
+building.add_building(db, 33, "civil2", 310.1, 433.9, 13.0)
 
-# print(building.show_info(db, 101))
-# print(building.show_all_buildings(db))
+print("->", building.show_info(db, 101))
+print(building.show_all_buildings(db))
 
 
-# # TEST: remove building
-# # building.delete_building(db, 33)
-# print(building.show_all_buildings(db))
+# TEST: remove building
+# building.delete_building(db, 33)
+print(building.show_all_buildings(db))
 
 
 # TEST: add bots

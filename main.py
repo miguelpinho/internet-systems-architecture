@@ -6,8 +6,7 @@ from DbClient.db import close_db, init_db, get_db
 from QueueInterface.exchange import create_exchanges
 from QueueInterface.logs import create_logs_queues
 from Utils.consts import configure_private_consts
-from werkzeug.contrib.cache import SimpleCache
-
+from werkzeug.contrib.cache import SimpleCache, MemcachedCache
 
 app = Flask(__name__)
 
@@ -16,6 +15,8 @@ private_consts = configure_private_consts()
 app.private_consts = private_consts
 
 cache = SimpleCache()
+print("CACHE: Using Local SimpleCache")
+
 app.cache = cache
 
 # Instantiate socketio interface

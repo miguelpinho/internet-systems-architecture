@@ -4,7 +4,7 @@ function refresh_nearby() {
     if (nearby_status != NEARBY_TRY){
         console.log("Update request for nearby users")
         let slider = $("#radius_range")[0];
-        let radius = parseInt(slider.value);
+        let radius = parseFloat(slider.value)/10000;
         $.ajax({
             type: "GET",
             data: {radius:radius},

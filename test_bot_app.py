@@ -13,7 +13,7 @@ def send_message(ip, token):
 
         payload = {'message': message, 'token': token}
 
-        r = requests.post(ip+'/api/bot', data=payload)
+        r = requests.post(ip+'/api/bot', json=payload)
         if r.status_code == 200:
             print(json.dumps(r.json()))
         else:
@@ -31,7 +31,7 @@ def main():
     if args.ip:
         ip = args.ip
     else:
-        ip = '127.0.0.1'  # default
+        ip = 'http://127.0.0.1:5000'  # default
 
     send_message(ip, args.token)
 

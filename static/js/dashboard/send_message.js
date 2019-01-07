@@ -5,7 +5,7 @@ function handle_send_message(e) {
   let input_box = $("#send_message_input")[0];
   let message = input_box.value;
   let slider = $("#radius_range")[0];
-  let radius = parseInt(slider.value)
+  let radius = parseFloat(slider.value)/10000;
   //Clean Input Box
   input_box.value = "";
 

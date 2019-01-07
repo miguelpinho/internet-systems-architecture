@@ -41,7 +41,7 @@ def auth_verification(auth_type=AuthType.AUTH_TYPE_USER):
 
             else:  # AUTH_TYPE_BOT
                 try:
-                    token = request.json()["token"]
+                    token = request.json["token"]
                 except KeyError:
                     raise exceptions.InvalidRequest("Not a valid token", status_code=401)
 
