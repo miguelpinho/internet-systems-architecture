@@ -30,7 +30,7 @@ def queues_creator(private_consts):
     def bots_message_logs_callback(channel, method, properties, body):
         data = json_engine.loads(body)
         message = data["text"]
-        bot_id = data["bot_token"]
+        bot_id = int(data["building"])
         logs.store_msg_building(db, bid=bot_id, msg=message)
 
     # Create bots2user message queue - The routing key "#" configures the queue to receive all messages

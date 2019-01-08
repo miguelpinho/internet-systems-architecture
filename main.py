@@ -6,7 +6,7 @@ from DbClient.db import close_db, init_db, get_db
 from QueueInterface.exchange import create_exchanges
 from QueueInterface.logs import create_logs_queues
 from Utils.consts import configure_private_consts
-from werkzeug.contrib.cache import SimpleCache, MemcachedCache
+from werkzeug.contrib.cache import SimpleCache
 
 app = Flask(__name__)
 
@@ -24,7 +24,7 @@ sio_class = ApiControllers.Sockio(private_consts, cache)
 sio = sio_class.config_socketio(app)
 
 # Instantiate database
-#init_db(get_db(private_consts))
+# init_db(get_db(private_consts))
 
 # Instantiate db_interfaces
 

@@ -18,16 +18,15 @@ def decorate_bot_routes(flask_app: Flask):
             content = request.json
             bot_token = g.auth_params["bot_id"]
             bot_building_id = g.auth_params["bot_building"]
-            bot_building = show_info(db, bot_building_id)[1]
-            message = json_engine.dumps({"text": content["message"], "bot_token": bot_token})
+            message = json_engine.dumps({"text": content["message"], "building": bot_building_id})
 
             connection = get_queue_connection()
             channel = get_queue_channel(connection)
             # By publishing with bot_building as routing-key, the message is filtered to the correct subscribers
-            publish_bot_message(channel, bot_building, message)
+            publish_bot_message(channel, str(bot_building_id), message)
             channel.close()
             connection.close()
         except (IndexError, TypeError) as e :
             raise InvalidRequest("token and/or message not valid")
 
-        return jsonify({"Message": message, "Building": bot_building, "Result": "Message Sent"}), 200
+        return jsonify({"Message": message, "Building": bot_building_id, "Result": "Message Sent"}), 200

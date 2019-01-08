@@ -1,5 +1,7 @@
 runtime: python37
 
+# entrypoint: gunicorn -b :$PORT --worker-class eventlet -w 1 main
+
 handlers:
   # This configures Google App Engine to serve the files in the app's static
   # directory.

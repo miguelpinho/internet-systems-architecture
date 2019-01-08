@@ -41,7 +41,12 @@ function config_receive_message(location_callback, nearby_callback, send_msg_cal
     })
 
     socket.on("user:incoming", (message) =>{
-        console.log("Message Received: "+message)
+        console.log("User Message Received: "+message)
+        display_message(message);
+    });
+
+    socket.on("bot:incoming", (message) =>{
+        console.log("Bot Message Received: "+message)
         display_message(message);
     });
 

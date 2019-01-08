@@ -19,8 +19,8 @@ def bind_queue(channel, queue_id, exchange, routing_key=None):
     channel.queue_bind(queue=queue_id, exchange=exchange, routing_key=routing_key)
 
 
-def rebind_queue(channel, queue_id, exchange, routing_key):
-    channel.queue_unbind(queue=queue_id, exchange=exchange)
+def rebind_queue(channel, queue_id, exchange, routing_key, old_routing_key):
+    channel.queue_unbind(queue=queue_id, exchange=exchange, routing_key=old_routing_key)
     channel.queue_bind(queue=queue_id, exchange=exchange, routing_key=routing_key)
 
 

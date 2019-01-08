@@ -11,6 +11,7 @@ $(document).ready( () => {
     // Update the current slider value (each time you drag the slider handle)
     slider.oninput = function() {
       output.innerHTML = `Radius [${this.value}m]`;
+      refresh_nearby()
     }
 
     let username = $("#username")[0];
