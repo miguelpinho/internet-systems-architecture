@@ -1,5 +1,5 @@
 $(document).ready( () => {
-    socket = io.connect('http://' + document.domain + ':' + location.port);
+    socket = io.connect('https://' + document.domain + ':' + location.port, {secure: true});
     config_receive_message(config_location, config_nearby, config_send_message);
     token = getCookie("x-auth")
     console.log("User token: "+token)
@@ -11,6 +11,7 @@ $(document).ready( () => {
     // Update the current slider value (each time you drag the slider handle)
     slider.oninput = function() {
       output.innerHTML = `Radius [${this.value}m]`;
+      refresh_nearby()
     }
 
     let username = $("#username")[0];

@@ -1,4 +1,4 @@
-import pymysql as MySQLdb
+import MySQLdb
 from Utils.consts import Datastore
 
 
@@ -9,7 +9,7 @@ def get_token(cache, token):
 
 def set_token(cache, token, user_id):
     # stores a token in association to a user_ID
-    return cache.set(Datastore.USER_PREFIX + str(token), user_id, timeout=20*60)
+    return cache.set(Datastore.USER_PREFIX + str(token), user_id, timeout=20 * 60)
 
 
 def delete_token(cache, token):
@@ -22,8 +22,9 @@ def set_position(db, ist_id, latitude, longitude):
     cur = db.cursor()
 
     try:
-        cur.execute("""INSERT INTO ist_user (ist_ID, latitude, longitude) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE latitude = %s, longitude = %s""",
-                    (ist_id, latitude, longitude, latitude, longitude))
+        cur.execute(
+            """INSERT INTO ist_user (ist_ID, latitude, longitude) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE latitude = %s, longitude = %s""",
+            (ist_id, latitude, longitude, latitude, longitude))
     except MySQLdb.Error as err:
         print("Error set user position MySQLdb DB: {}".
               format(err))
@@ -41,7 +42,7 @@ def get_position(db, ist_id):
 
     try:
         cur.execute("""SELECT latitude, longitude FROM ist_user WHERE ist_user.ist_ID = %s""",
-                    (ist_id, ))
+                    (ist_id,))
     except MySQLdb.Error as err:
         print("Error getting user location MySQLdb DB: {}".
               format(err))
@@ -62,14 +63,15 @@ def get_position(db, ist_id):
 def clear_position(db, ist_id):
     # marks the postion of the user as no longer valid
     cur = db.cursor()
-
     try:
         cur.execute("""UPDATE ist_user SET latitude = NULL, longitude = NULL, cur_building = NULL
                     WHERE ist_user.ist_ID = %s""",
-                    (ist_id, ))
+                    (ist_id,))
     except MySQLdb.Error as err:
         print("Error clearing user location MySQLdb DB: {}".
               format(err))
+    else:
+        db.commit()
 
 
 def get_close_users(db, ist_id, radius):
@@ -98,7 +100,7 @@ def get_close_users(db, ist_id, radius):
 
     users = cur.fetchall()
 
-    return  [u[0] for u in users]
+    return [u[0] for u in users]
 
 
 def get_logged_users(db):
@@ -106,8 +108,7 @@ def get_logged_users(db):
     cur = db.cursor()
 
     try:
-        cur.execute("""SELECT ist_id FROM ist_user WHERE latitude IS NOT NULL AND longitude IS NOT NULL""",
-                    (lat_low, lat_high, long_low, long_high, ist_id))
+        cur.execute("""SELECT ist_id FROM ist_user WHERE latitude IS NOT NULL AND longitude IS NOT NULL""")
 
     except MySQLdb.Error as err:
         print("Error getting logged users MySQLdb DB: {}".
@@ -116,7 +117,7 @@ def get_logged_users(db):
 
     users = cur.fetchall()
 
-    return  [u[0] for u in users]
+    return [u[0] for u in users]
 
 
 def get_user_building(db, ist_id):
@@ -125,7 +126,7 @@ def get_user_building(db, ist_id):
 
     try:
         cur.execute("""SELECT cur_building FROM ist_user WHERE ist_user.ist_ID = %s""",
-                    (ist_id, ))
+                    (ist_id,))
     except MySQLdb.Error as err:
         print("Error getting user building MySQLdb DB: {}".
               format(err))

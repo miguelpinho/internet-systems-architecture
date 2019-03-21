@@ -5,7 +5,9 @@ from DbInterface import logs
 from threading import Thread
 import json as json_engine
 
+
 def create_logs_queues(private_consts):
+    # Created in a background thread due to the synchronous behaviour of message queues
     thread = Thread(target=queues_creator, args=(private_consts,))
     thread.start()
 
@@ -26,7 +28,10 @@ def queues_creator(private_consts):
         logs.store_msg_user(db, ist_id=sender_id, msg=message)
 
     def bots_message_logs_callback(channel, method, properties, body):
-        logs.store_msg_building(db, bid="some bid", msg="some message")
+        data = json_engine.loads(body)
+        message = data["text"]
+        bot_id = int(data["building"])
+        logs.store_msg_building(db, bid=bot_id, msg=message)
 
     # Create bots2user message queue - The routing key "#" configures the queue to receive all messages
     queue_id = create_queue(channel, "logs_queue_bots_exchange")

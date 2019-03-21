@@ -7,6 +7,7 @@ from flask import Flask, request, current_app
 from flask_socketio import SocketIO, emit, disconnect
 
 from DbInterface.user import get_token, clear_position, set_position, get_user_building, get_position
+from DbInterface.buildings import show_info
 from DbClient.db import get_db
 from QueueInterface import message_queues as queue
 
@@ -42,7 +43,8 @@ class Sockio:
             connection = queue.connect(flask_app.private_consts.Queues.QUEUE_HOST)
             channel = queue.create_channel(connection)
             db = get_db(self.consts)
-            self.channels_dict[request.sid] = {"channel": channel, "user_id": userid, "db": db, "connection": connection}
+            self.channels_dict[request.sid] = {"channel"   : channel, "user_id": userid, "db": db,
+                                               "connection": connection}
 
             # User2user messages
             queue_name = Queues.USER_U2U_PREFIX + "_" + str(userid) + "_" + uuid.uuid4().hex
@@ -85,11 +87,14 @@ class Sockio:
             self.channels_dict[request.sid]["bot_queue"] = queue_id
 
             def bot_queue_callback(ch, method, properties, body):
-                print(ch, body, properties, method)
+                data = json_engine.loads(body)
+                message = data["text"]
+                content = {"time": strftime("%Y-%m-%d %H:%M:%S", gmtime()), "from": "Bot", "text": message}
                 # Here messages already are filtered by the exchange
-                emit("bot:incoming", body)
+                sio.emit("bot:incoming", content, room=room_id)
 
             queue.configure_consume(channel, bot_queue_callback, queue_id)
+            # Created in a background thread due to the synchronous behaviour of message queues
             thread = Thread(target=queue.start_message_consumption, args=(channel,))
             thread.start()
             emit("handshake_allowed", {"success": "true", "room": userid})
@@ -99,14 +104,15 @@ class Sockio:
         def disconnect_handler():
             # Here disconnect the queue based on the request sid, by closing the channel opened in the handshake
             if request.sid in self.channels_dict:
+                user_id = self.channels_dict[request.sid]["user_id"]
+                print("Disconnecting user", user_id, "-session:", request.sid)
                 self.channels_dict[request.sid]["channel"].close()
                 self.channels_dict[request.sid]["connection"].close()
-                db = self.channels_dict[request.sid]["db"].close()
-                clear_position(db, self.channels_dict[request.sid]["user_id"])
-                self.channels_dict[request.sid]["db"].close()
-
-            # Pop from dictionary
-            self.channels_dict.pop(request.sid)
+                db = self.channels_dict[request.sid]["db"]
+                clear_position(db, user_id)
+                db.close()
+                # Pop from dictionary
+                self.channels_dict.pop(request.sid)
 
         @sio.on("building_change")
         def building_change_handler(json_data):
@@ -120,17 +126,30 @@ class Sockio:
             bqueue = self.channels_dict[request.sid]["bot_queue"]
             channel = self.channels_dict[request.sid]["channel"]
             user = self.channels_dict[request.sid]["user_id"]
+            try:
+                old_routing_key = self.channels_dict[request.sid]["old_routing_key"]
+            except KeyError:
+                old_routing_key = ""
             # Store location in db
             try:
                 db = self.channels_dict[request.sid]["db"]
                 set_position(db, user, data["body"]["lat"], data["body"]["lon"])
                 # Query building
-                building = get_user_building(db, user)
-                # Unbind from old building
-                # Bind to new building
-                queue.rebind_queue(channel, bqueue, configs.BOTS_EXCHANGE, building)
-                if building is None:
+                user_building = get_user_building(db, user)
+                if user_building is None:
+                    # nobuilding is no building, key will not match
+                    queue.rebind_queue(channel, bqueue, configs.BOTS_EXCHANGE, "nobuilding", old_routing_key)
                     building = "Outside"
+                    self.channels_dict[request.sid]["old_routing_key"] = "nobuilding"
+
+                else:
+                    building = show_info(db, user_building)[1]
+                    # Unbind from old building
+                    # Bind to new building
+                    queue.rebind_queue(channel, bqueue, configs.BOTS_EXCHANGE, str(user_building), old_routing_key)
+                    self.channels_dict[request.sid]["old_routing_key"] = str(user_building)
+
+                print("User", user, "Updated is location - new building: ", building)
                 emit("building_change_success", {"building": building, "success": "yes"})
 
             except TypeError as e:

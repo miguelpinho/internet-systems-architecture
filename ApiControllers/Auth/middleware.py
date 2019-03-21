@@ -1,12 +1,12 @@
 from functools import wraps
+
 from flask import g, redirect, request, url_for, current_app
 
-import exceptions
-from ApiControllers.Auth.exceptions import NotAuthenticated
-from Utils.consts import AuthType
-from db import get_db
-from DbInterface.user import get_token
 import DbInterface.bots as bot_datastore
+import ApiControllers.exceptions as exceptions
+from DbInterface.user import get_token
+from Utils.consts import AuthType
+from ApiControllers.ApiUtils.db import get_db
 
 
 def auth_verification(auth_type=AuthType.AUTH_TYPE_USER):
@@ -29,7 +29,7 @@ def auth_verification(auth_type=AuthType.AUTH_TYPE_USER):
 
             elif auth_type == AuthType.AUTH_TYPE_ADMIN:
                 # Same as for user, but do not redirect, because admin does not login from a web client
-                token = request.headers.get("x-auth", None)
+                token = request.cookies.get("x-auth", None)
                 admin_id = get_token(current_app.cache, token)
 
                 if admin_id is None:
@@ -41,7 +41,7 @@ def auth_verification(auth_type=AuthType.AUTH_TYPE_USER):
 
             else:  # AUTH_TYPE_BOT
                 try:
-                    token = request.json()["token"]
+                    token = request.json["token"]
                 except KeyError:
                     raise exceptions.InvalidRequest("Not a valid token", status_code=401)
 

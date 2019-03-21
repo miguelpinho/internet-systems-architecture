@@ -47,7 +47,7 @@ def decorate_auth_handlers(flask_app: Flask):
 
         else:  # Admin Login
             # Receives password and admin name in the POST body
-            body = request.json()
+            body = request.json
             password = body["password"]
             username = body["username"]
             # compares it to the credentials
@@ -60,7 +60,7 @@ def decorate_auth_handlers(flask_app: Flask):
                     # each token comparisson
                     # For the admin give only a header, as it is a REST client
                     resp = jsonify({"message": "login succesful"})
-                    resp.headers["x-auth"] = token
+                    resp.set_cookie("x-auth", token)
                     return resp
 
             raise exceptions.InvalidRequest("Invalid login request, wrong credentials", status_code=401)

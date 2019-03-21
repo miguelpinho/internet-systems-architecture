@@ -1,13 +1,13 @@
 from time import strftime, gmtime
 
-from flask import Flask, request, jsonify, g, current_app, json
+from flask import Flask, request, jsonify, g, json
 
+import DbInterface.user as user
 from ApiControllers.Auth import auth_verification
-from ApiControllers.exceptions import InvalidRequest
-from ApiUtils.db import get_db
 from ApiControllers.Auth.exceptions import NotAuthenticated
-from DbInterface.user import get_position
-from msg_queue import get_queue_connection, get_queue_channel, publish_user_message
+from ApiControllers.exceptions import InvalidRequest
+from .ApiUtils.db import get_db
+from .ApiUtils.msg_queue import get_queue_connection, get_queue_channel, publish_user_message
 
 
 def decorate_user_routes(flask_app: Flask):
@@ -18,27 +18,26 @@ def decorate_user_routes(flask_app: Flask):
     def user_messages():
         """ Handles User Messages - Send messages to the message queues"""
         # Receives uuid on the user from the middleware (not yet implemented, currently receives a "Fake UUID")
+        user_id = None
         if 'auth_params' in g:
             user_params = g.auth_params
             user_id = user_params["user_id"]
+        try:
+            message = request.json["message"]
+            content = {"message": message, "user_id": user_id}
+            radius = request.json["radius"]
+            queue_message = json.dumps({"radius": radius, "content": content})
+            connection = get_queue_connection()
+            channel = get_queue_channel(connection)
+            publish_user_message(channel, queue_message)
+            channel.close()
+            connection.close()
+        except (IndexError, TypeError) as e:
+            raise InvalidRequest("message not valid", str(e))
 
-        if request.method == "POST":  # Handle new message creation
-            try:
-                message = request.json["message"]
-                content = {"message": message, "user_id": user_id}
-                radius = request.json["radius"]
-                queue_message = json.dumps({"radius": radius, "content": content})
-                connection = get_queue_connection()
-                channel = get_queue_channel(connection)
-                publish_user_message(channel, queue_message)
-                channel.close()
-                connection.close()
-            except (IndexError, TypeError) as e:
-                raise InvalidRequest("message not valid", str(e))
-
-            # Handle the request properly
-            return jsonify({"UserId": user_id, "Message": {"text": message, "time": strftime("%Y-%m-%d %H:%M:%S",
-                            gmtime()), "from": user_id}, "Result": "Message Sent"}), 200
+        # Handle the request properly
+        return jsonify({"UserId": user_id, "Message": {"text": message, "time": strftime("%Y-%m-%d %H:%M:%S",
+                        gmtime()), "from": user_id}, "Result": "Message Sent"}), 200
 
     @flask_app.route("/api/user/building", methods=["GET"])
     @auth_verification()  # This is the middleware for authentication

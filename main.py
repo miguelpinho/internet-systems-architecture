@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, g
 import ApiControllers
 from DbClient.db import close_db, init_db, get_db
@@ -6,7 +8,6 @@ from QueueInterface.logs import create_logs_queues
 from Utils.consts import configure_private_consts
 from werkzeug.contrib.cache import SimpleCache
 
-
 app = Flask(__name__)
 
 # Set private consts
@@ -14,6 +15,8 @@ private_consts = configure_private_consts()
 app.private_consts = private_consts
 
 cache = SimpleCache()
+print("CACHE: Using Local SimpleCache")
+
 app.cache = cache
 
 # Instantiate socketio interface
@@ -21,7 +24,7 @@ sio_class = ApiControllers.Sockio(private_consts, cache)
 sio = sio_class.config_socketio(app)
 
 # Instantiate database
-#init_db(get_db(private_consts))
+# init_db(get_db(private_consts))
 
 # Instantiate db_interfaces
 
@@ -55,4 +58,5 @@ def request_teardown(e):
 
 
 if __name__ == '__main__':
-    sio.run(app)
+    port = int(os.environ.get("PORT", 5000))
+    sio.run(app, port=port)

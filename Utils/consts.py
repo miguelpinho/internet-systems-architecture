@@ -95,6 +95,8 @@ class PrivateConsts:
         MYSQL_DATABASE_USER = "Put the postgre database user"
         MYSQL_DATABASE_HOST = "Put the postgre host ip here"
         MYSQL_DATABASE_PW = "Put the postgre password"
+        MYSQL_DATABASE_CONNECTION_NAME = "Put connection name"
+        REDIS_HOST = "10.0.0.3"
 
     class AdminKeys:
         ADMIN_PASSWORD = "admin"
